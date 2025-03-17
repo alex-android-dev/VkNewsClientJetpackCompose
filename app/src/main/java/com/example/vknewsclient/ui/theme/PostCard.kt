@@ -89,6 +89,8 @@ private fun IconWithText(text: String, icon: Int) {
             tint = Black500,
         )
 
+        Spacer(modifier = Modifier.width(3.dp))
+
         Text(
             text = text,
             color = Black500,
