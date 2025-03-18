@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
@@ -38,15 +37,12 @@ import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
 
         setContent {
             VkNewsClientTheme() {
-                ModalNavigationDrawer(
-                    drawerContent = { VkModalNavigationDrawer() }
-                ) {
-                    VkScaffold()
-                }
+                VkScaffold()
             }
         }
     }
