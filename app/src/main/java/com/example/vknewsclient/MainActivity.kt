@@ -32,7 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.ui.theme.PostCard
+import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
+import com.example.vknewsclient.ui.theme.VkTopAppBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,72 +70,6 @@ private fun VkScaffold() {
                 .padding(paddingValues)
         ) {
             PostCard()
-        }
-    }
-}
-
-
-@Composable
-private fun VkModalNavigationDrawer() {
-
-    val items = listOf(
-        Icons.Default.AccountCircle,
-        Icons.Default.Settings
-    )
-
-    ModalDrawerSheet {
-        Column {
-            Spacer(Modifier.height(10.dp))
-            items.forEach { item ->
-                NavigationDrawerItem(
-                    icon = { Icon(item, contentDescription = null) },
-                    label = { Text(item.name.substringAfterLast(".")) },
-                    selected = false,
-                    onClick = {},
-                )
-            }
-        }
-    }
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun VkTopAppBar() {
-    TopAppBar(
-        title = { Text(text = "VK clone") },
-        navigationIcon = {
-            IconButton(onClick = { }) {
-                Icon(
-                    Icons.Filled.Menu,
-                    contentDescription = null
-                )
-            }
-        }
-    )
-}
-
-@Composable
-private fun VkNavigationBar() {
-    val items = listOf("Home", "Message", "Settings")
-    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Email, Icons.Filled.Settings)
-
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
-    ) {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        selectedIcons[index],
-                        contentDescription = item,
-                    )
-                },
-                label = { Text(item) },
-                selected = false,
-                onClick = {}
-            )
         }
     }
 }
