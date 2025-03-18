@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">VkNewsClient</string>
+
+    <string name="app_name">
+        VkNewsClient
+    </string>
+
+    <string name="nav_item_main">
+        Главная
+    </string>
+
+    <string name="nav_item_message">
+        Сообщения
+    </string>
+
+    <string name="nav_item_settings">
+        Настройки
+    </string>
+
+
 </resources>
