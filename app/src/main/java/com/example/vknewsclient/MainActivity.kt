@@ -1,6 +1,7 @@
 package com.example.vknewsclient
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,7 +40,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun VkScaffold() {
-    val snackBarHostState = SnackbarHostState()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    Log.d("MainActivity", snackBarHostState.currentSnackbarData.toString())
+
     val scope = rememberCoroutineScope()
     val fabIsVisible = remember {
         mutableStateOf(true)
