@@ -31,8 +31,11 @@ import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R.drawable
 
 @Composable
-fun PostCard() {
+fun PostCard(
+    modifier: Modifier = Modifier
+) {
     Card(
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
@@ -105,11 +108,11 @@ private fun PostBody() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp)
     ) {
 
         Text(
-            text = LoremIpsum(25).values.joinToString(),
+            text = LoremIpsum(5).values.joinToString(),
         )
 
         Spacer(modifier = Modifier.height(5.dp))

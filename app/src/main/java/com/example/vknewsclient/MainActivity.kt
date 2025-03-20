@@ -12,12 +12,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.ui.theme.PostCard
-import com.example.vknewsclient.ui.theme.VkFloatingActionButton
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.example.vknewsclient.ui.theme.VkSnackBarHost
@@ -40,10 +37,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun VkScaffold() {
     val snackBarHostState = SnackbarHostState()
-    val scope = rememberCoroutineScope()
-    val fabIsVisible = remember {
-        mutableStateOf(true)
-    }
 
     Scaffold(
         modifier = Modifier
@@ -55,11 +48,6 @@ private fun VkScaffold() {
         bottomBar = {
             VkNavigationBar()
         },
-        floatingActionButton = {
-            if (fabIsVisible.value == true) {
-                VkFloatingActionButton(snackBarHostState, scope, fabIsVisible)
-            }
-        },
         snackbarHost = {
             VkSnackBarHost(snackBarHostState)
         }
@@ -69,7 +57,9 @@ private fun VkScaffold() {
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-            PostCard()
+            PostCard(
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
