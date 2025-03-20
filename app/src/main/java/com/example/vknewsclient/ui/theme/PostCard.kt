@@ -1,6 +1,7 @@
 package com.example.vknewsclient.ui.theme
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R.drawable
 import com.example.vknewsclient.domain.FeedPost
@@ -37,6 +37,7 @@ import com.example.vknewsclient.domain.StatisticType
 fun PostCard(
     modifier: Modifier = Modifier,
     feedPost: FeedPost,
+    onStatisticsItemClickListener: (StatisticItem) -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -55,14 +56,18 @@ fun PostCard(
         Spacer(modifier = Modifier.height(5.dp))
 
         Statistics(
-            statisticItemList = feedPost.statistics
+            statisticItemList = feedPost.statistics,
+            onItemClickListener = onStatisticsItemClickListener
         )
 
     }
 }
 
 @Composable
-private fun Statistics(statisticItemList: List<StatisticItem>) {
+private fun Statistics(
+    statisticItemList: List<StatisticItem>,
+    onItemClickListener: (StatisticItem) -> Unit,
+) {
 
     Row(
         modifier = Modifier
@@ -72,20 +77,43 @@ private fun Statistics(statisticItemList: List<StatisticItem>) {
 
         Row(modifier = Modifier.weight(1f)) {
             val viewsItem = statisticItemList.getItemByType(StatisticType.VIEWS)
-            IconWithText(viewsItem.count.toString(), drawable.ic_views)
+
+            IconWithText(
+                text = viewsItem.count.toString(),
+                icon = drawable.ic_views,
+                onItemClickListener = {
+                    onItemClickListener(viewsItem)
+                },
+            )
         }
 
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            val sharesItem = statisticItemList.getItemByType(StatisticType.SHARES)
-            val commentsItem = statisticItemList.getItemByType(StatisticType.COMMENTS)
-            val likesItem = statisticItemList.getItemByType(StatisticType.LIKES)
 
-            IconWithText(sharesItem.count.toString(), drawable.ic_share)
-            IconWithText(commentsItem.count.toString(), drawable.ic_comment)
-            IconWithText(likesItem.count.toString(), drawable.ic_like)
+            val sharesItem = statisticItemList.getItemByType(StatisticType.SHARES)
+            IconWithText(
+                sharesItem.count.toString(), drawable.ic_share,
+                onItemClickListener = {
+                    onItemClickListener(sharesItem)
+                })
+
+            val commentsItem = statisticItemList.getItemByType(StatisticType.COMMENTS)
+            IconWithText(
+                commentsItem.count.toString(), drawable.ic_comment,
+                onItemClickListener = {
+                    onItemClickListener(commentsItem)
+                })
+
+            val likesItem = statisticItemList.getItemByType(StatisticType.LIKES)
+            IconWithText(
+                likesItem.count.toString(), drawable.ic_like,
+                onItemClickListener = {
+                    onItemClickListener(likesItem)
+                })
+
+
         }
 
     }
@@ -97,9 +125,17 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 }
 
 @Composable
-private fun IconWithText(text: String, icon: Int) {
+private fun IconWithText(
+    text: String,
+    icon: Int,
+    onItemClickListener: () -> Unit
+) {
 
-    Row {
+    Row(
+        modifier = Modifier.clickable {
+            onItemClickListener()
+        }
+    ) {
 
         Icon(
             painter = painterResource(icon),
@@ -188,23 +224,23 @@ private fun PostHeader(feedPost: FeedPost) {
 
 }
 
-@Preview
-@Composable
-private fun PreviewPostCardLight() {
-    VkNewsClientTheme(
-        darkTheme = false
-    ) {
-        PostCard(feedPost = FeedPost())
-    }
-}
-
-
-@Preview
-@Composable
-private fun PreviewPostCardDark() {
-    VkNewsClientTheme(
-        darkTheme = true
-    ) {
-        PostCard(feedPost = FeedPost())
-    }
-}
+//@Preview
+//@Composable
+//private fun PreviewPostCardLight() {
+//    VkNewsClientTheme(
+//        darkTheme = false
+//    ) {
+//        PostCard(feedPost = FeedPost())
+//    }
+//}
+//
+//
+//@Preview
+//@Composable
+//private fun PreviewPostCardDark() {
+//    VkNewsClientTheme(
+//        darkTheme = true
+//    ) {
+//        PostCard(feedPost = FeedPost())
+//    }
+//}

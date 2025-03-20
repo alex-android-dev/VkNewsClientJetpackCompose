@@ -12,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.domain.FeedPost
@@ -29,15 +31,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VkNewsClientTheme() {
-                VkScaffold()
+                MainScreen()
             }
         }
     }
 }
 
 @Composable
-private fun VkScaffold() {
-    val snackBarHostState = SnackbarHostState()
+private fun MainScreen() {
+    val feedPost = remember {
+        mutableStateOf(FeedPost())
+    }
 
     Scaffold(
         modifier = Modifier
@@ -49,9 +53,6 @@ private fun VkScaffold() {
         bottomBar = {
             VkNavigationBar()
         },
-        snackbarHost = {
-            VkSnackBarHost(snackBarHostState)
-        }
     ) { paddingValues ->
 
         Box(
@@ -60,7 +61,21 @@ private fun VkScaffold() {
         ) {
             PostCard(
                 modifier = Modifier.padding(8.dp),
-                FeedPost()
+                feedPost.value,
+                onStatisticsItemClickListener = { newStatisticItem ->
+                    val oldStatistics = feedPost.value.statistics
+
+                    val newStatistics = oldStatistics.toMutableList().apply {
+                        replaceAll { oldItem ->
+                            if (oldItem.type == newStatisticItem.type)
+                                oldItem.copy(count = oldItem.count + 1)
+                            else oldItem
+                        }
+                    }
+
+
+                    feedPost.value = feedPost.value.copy(statistics = newStatistics)
+                }
             )
         }
     }
