@@ -14,6 +14,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.ui.theme.PostCard
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
@@ -58,7 +59,8 @@ private fun VkScaffold() {
                 .padding(paddingValues)
         ) {
             PostCard(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp),
+                FeedPost()
             )
         }
     }

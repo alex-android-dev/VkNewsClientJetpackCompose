@@ -29,12 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R.drawable
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 
 @Composable
 fun PostCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    feedPost: FeedPost,
 ) {
     Card(
         modifier = modifier,
@@ -44,15 +46,17 @@ fun PostCard(
         ),
         shape = RoundedCornerShape(0.dp),
     ) {
-        PostHeader()
+        PostHeader(feedPost)
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        PostBody()
+        PostBody(feedPost)
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        Statistics()
+        Statistics(
+            statisticItemList = feedPost.statistics
+        )
 
     }
 }
@@ -115,7 +119,7 @@ private fun IconWithText(text: String, icon: Int) {
 }
 
 @Composable
-private fun PostBody() {
+private fun PostBody(feedPost: FeedPost) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -123,7 +127,7 @@ private fun PostBody() {
     ) {
 
         Text(
-            text = LoremIpsum(5).values.joinToString(),
+            text = feedPost.contentText,
         )
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -131,7 +135,7 @@ private fun PostBody() {
         Image(
             modifier = Modifier
                 .fillMaxWidth(),
-            painter = painterResource(drawable.post_image_example),
+            painter = painterResource(feedPost.contentImageResId),
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
@@ -140,7 +144,7 @@ private fun PostBody() {
 }
 
 @Composable
-private fun PostHeader() {
+private fun PostHeader(feedPost: FeedPost) {
 
     Row(
         modifier = Modifier
@@ -152,7 +156,7 @@ private fun PostHeader() {
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(drawable.community_avatar),
+            painter = painterResource(feedPost.avatarResId),
             contentDescription = null,
         )
 
@@ -164,13 +168,13 @@ private fun PostHeader() {
                 .fillMaxWidth(),
         ) {
             Text(
-                text = "уволено",
+                text = feedPost.communityName
             )
 
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "14:00",
+                text = feedPost.publicationDate,
                 color = Black500,
             )
         }
@@ -190,7 +194,7 @@ private fun PreviewPostCardLight() {
     VkNewsClientTheme(
         darkTheme = false
     ) {
-        PostCard()
+        PostCard(feedPost = FeedPost())
     }
 }
 
@@ -201,6 +205,6 @@ private fun PreviewPostCardDark() {
     VkNewsClientTheme(
         darkTheme = true
     ) {
-        PostCard()
+        PostCard(feedPost = FeedPost())
     }
 }
