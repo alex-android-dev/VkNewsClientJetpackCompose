@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +19,6 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.ui.theme.PostCard
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
-import com.example.vknewsclient.ui.theme.VkSnackBarHost
 import com.example.vknewsclient.ui.theme.VkTopAppBar
 
 class MainActivity : ComponentActivity() {
