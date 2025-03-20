@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R.drawable
+import com.example.vknewsclient.domain.StatisticItem
+import com.example.vknewsclient.domain.StatisticType
 
 @Composable
 fun PostCard(
@@ -56,7 +58,7 @@ fun PostCard(
 }
 
 @Composable
-private fun Statistics() {
+private fun Statistics(statisticItemList: List<StatisticItem>) {
 
     Row(
         modifier = Modifier
@@ -65,20 +67,29 @@ private fun Statistics() {
     ) {
 
         Row(modifier = Modifier.weight(1f)) {
-            IconWithText("56", drawable.ic_views)
+            val viewsItem = statisticItemList.getItemByType(StatisticType.VIEWS)
+            IconWithText(viewsItem.count.toString(), drawable.ic_views)
         }
 
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            IconWithText("10", drawable.ic_share)
-            IconWithText("3", drawable.ic_comment)
-            IconWithText("33", drawable.ic_like)
+            val sharesItem = statisticItemList.getItemByType(StatisticType.SHARES)
+            val commentsItem = statisticItemList.getItemByType(StatisticType.COMMENTS)
+            val likesItem = statisticItemList.getItemByType(StatisticType.LIKES)
+
+            IconWithText(sharesItem.count.toString(), drawable.ic_share)
+            IconWithText(commentsItem.count.toString(), drawable.ic_comment)
+            IconWithText(likesItem.count.toString(), drawable.ic_like)
         }
 
     }
+}
 
+private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem {
+    return this.find { it.type == type }
+        ?: throw IllegalStateException("ext fun getItemByType don't return correct type")
 }
 
 @Composable
