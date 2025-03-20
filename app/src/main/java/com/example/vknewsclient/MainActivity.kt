@@ -1,7 +1,6 @@
 package com.example.vknewsclient
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,17 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.ui.theme.PostCard
-import com.example.vknewsclient.ui.theme.VkFloatingActionButton
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
-import com.example.vknewsclient.ui.theme.VkSnackBarHost
 import com.example.vknewsclient.ui.theme.VkTopAppBar
 
 class MainActivity : ComponentActivity() {
@@ -32,21 +29,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VkNewsClientTheme() {
-                VkScaffold()
+                MainScreen()
             }
         }
     }
 }
 
 @Composable
-private fun VkScaffold() {
-    val snackBarHostState = remember { SnackbarHostState() }
-
-    Log.d("MainActivity", snackBarHostState.currentSnackbarData.toString())
-
-    val scope = rememberCoroutineScope()
-    val fabIsVisible = remember {
-        mutableStateOf(true)
+private fun MainScreen() {
+    val feedPost = remember {
+        mutableStateOf(FeedPost())
     }
 
     Scaffold(
@@ -59,21 +51,30 @@ private fun VkScaffold() {
         bottomBar = {
             VkNavigationBar()
         },
-        floatingActionButton = {
-            if (fabIsVisible.value == true) {
-                VkFloatingActionButton(snackBarHostState, scope, fabIsVisible)
-            }
-        },
-        snackbarHost = {
-            VkSnackBarHost(snackBarHostState)
-        }
     ) { paddingValues ->
 
         Box(
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-            PostCard()
+            PostCard(
+                modifier = Modifier.padding(8.dp),
+                feedPost.value,
+                onStatisticsItemClickListener = { newStatisticItem ->
+                    val oldStatistics = feedPost.value.statistics
+
+                    val newStatistics = oldStatistics.toMutableList().apply {
+                        replaceAll { oldItem ->
+                            if (oldItem.type == newStatisticItem.type)
+                                oldItem.copy(count = oldItem.count + 1)
+                            else oldItem
+                        }
+                    }
+
+
+                    feedPost.value = feedPost.value.copy(statistics = newStatistics)
+                }
+            )
         }
     }
 }
