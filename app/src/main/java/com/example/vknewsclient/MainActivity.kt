@@ -9,15 +9,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.ui.theme.PostCard
 import com.example.vknewsclient.ui.theme.VkNavigationBar
@@ -60,16 +60,53 @@ private fun MainScreen(viewModel: MainViewModel) {
                 .padding(paddingValues)
         ) {
 
-            val feedPost = viewModel.feedPost.observeAsState(FeedPost())
 
-            PostCard(
-                modifier = Modifier.padding(8.dp),
-                feedPost.value,
-                onLikeClickListener = viewModel::updateCount,
-                onShareClickListener = viewModel::updateCount,
-                onViewsClickListener = viewModel::updateCount,
-                onCommentClickListener = viewModel::updateCount,
-            )
+            VkNewsFeedLazyColumn(viewModel)
+
+
         }
     }
 }
+
+@Composable
+private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
+    val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
+
+    val lazyStateList = rememberLazyListState()
+
+    LazyColumn(
+        modifier = Modifier.background(
+            MaterialTheme.colorScheme.background,
+        ),
+        state = lazyStateList,
+    ) {
+
+        items(
+            items = feedPosts.value,
+            key = { it.id }
+        ) { feedPost ->
+            PostCard(
+                modifier = Modifier.padding(8.dp),
+                feedPost,
+                onLikeClickListener = {
+                    viewModel.updateStatisticCard(feedPost, it)
+                },
+                onShareClickListener = {
+                    viewModel.updateStatisticCard(feedPost, it)
+                },
+                onViewsClickListener = {
+                    viewModel.updateStatisticCard(feedPost, it)
+                },
+                onCommentClickListener = {
+                    viewModel.updateStatisticCard(feedPost, it)
+                },
+            )
+        }
+    }
+
+
+}
+
+// Отображение Lazy Column
+// Клики работают на отдельный пост
+// todo Удаление при помощи свайпа

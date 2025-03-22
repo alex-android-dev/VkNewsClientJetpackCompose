@@ -1,5 +1,6 @@
 package com.example.vknewsclient
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,24 +9,48 @@ import com.example.vknewsclient.domain.StatisticItem
 
 class MainViewModel : ViewModel() {
 
-    private val _feedPost = MutableLiveData(FeedPost())
-    val feedPost = _feedPost as LiveData<FeedPost>
+    private val initialList = mutableListOf<FeedPost>().apply {
+        repeat(50) {
+            add(
+                FeedPost(
+                    id = it
+                )
+            )
+        }
+    }
 
+    private val _feedPostsLiveData = MutableLiveData<List<FeedPost>>(initialList)
+    val feedPostsLiveData = _feedPostsLiveData as LiveData<List<FeedPost>>
 
-    fun updateCount(item: StatisticItem) {
+    fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
 
-        val oldStatistics = feedPost.value?.statistics ?: throw IllegalStateException()
+        val feedPostList = _feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
 
-        val newStatistics = oldStatistics.toMutableList().apply {
-            replaceAll { oldItem ->
-                if (oldItem.type == item.type)
-                    oldItem.copy(count = oldItem.count + 1)
-                else oldItem
+        feedPostList.forEachIndexed { index, post ->
+            if (post == feedPost) {
+
+                val newStatistic = post.statistics.toMutableList().apply {
+                    replaceAll { oldItem ->
+                        if (oldItem.type == statisticItem.type) {
+                            Log.d("MainViewModel", "oldItem: ${oldItem.type}")
+                            Log.d("MainViewModel", "statisticItem: ${statisticItem.type}")
+
+                            oldItem.copy(count = oldItem.count + 1)
+                        } else oldItem
+                    }
+                }
+
+                feedPostList[index] = post.copy(
+                    statistics = newStatistic
+                )
+
             }
+
         }
 
+        _feedPostsLiveData.value = feedPostList
 
-        _feedPost.value = feedPost.value?.copy(statistics = newStatistics)
+        Log.d("MainViewModel", "${_feedPostsLiveData.value?.get(0)?.statistics}")
 
     }
 }
