@@ -24,15 +24,6 @@ class MainViewModel : ViewModel() {
     val feedPostsLiveData: LiveData<List<FeedPost>>
         get() = _feedPostsLiveData
 
-    private val _selectedNavItem = MutableLiveData<NavigationItem>(NavigationItem.Home)
-    val selectedNavItem: LiveData<NavigationItem>
-        get() = _selectedNavItem
-
-    fun selectedNavItem(navItem: NavigationItem) {
-        _selectedNavItem.value = navItem
-    }
-
-
     fun removePost(feedPost: FeedPost) {
         val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
         val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }

@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 fun AppNavGraph(
     navHostController: NavHostController,
     homeScreenContent: @Composable () -> Unit,
-    homeScreenFavourite: @Composable () -> Unit,
-    homeScreenProfile: @Composable () -> Unit,
+    favouriteScreen: @Composable () -> Unit,
+    profileScreen: @Composable () -> Unit,
 ) {
     NavHost(
         navController = navHostController,
@@ -22,18 +22,15 @@ fun AppNavGraph(
         // Добавляет в граф новое направление
         composable(
             route = Screen.NewsFeed.route, // Название экрана на который нужно перейти
-            arguments = emptyList(), // Если при открытии экрана нужно передать какую-либо информацию
-            deepLinks = emptyList(), // Передать диплинки
         ) {
             // Тело контента. Тут будем работать с вьюшками
             // Воспользуемся коллбэками и получим тут Composable функции, которые будем вызывать
-            homeScreenContent
+            homeScreenContent()
         }
 
         // Если мы хотим вызвать еще какой-то экран, то также передаем функцию composable
-
-        composable(route = Screen.Favorite.route) { homeScreenFavourite }
-        composable(route = Screen.Profile.route) { homeScreenProfile }
+        composable(route = Screen.Favorite.route) { favouriteScreen() }
+        composable(route = Screen.Profile.route) { profileScreen() }
 
     }
 }

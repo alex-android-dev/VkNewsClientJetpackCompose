@@ -10,7 +10,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,10 +25,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.setValue
-import com.example.vknewsclient.ui.theme.VkNavigationBar
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.example.vknewsclient.ui.theme.HomeScreen
 import com.example.vknewsclient.ui.theme.NavigationItem
+import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkTopAppBar
 
 class MainActivity : ComponentActivity() {
@@ -46,7 +54,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainScreen(viewModel: MainViewModel) {
-    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
+    val navHostController = rememberNavController()
 
     Scaffold(
         modifier = Modifier
@@ -56,21 +64,22 @@ private fun MainScreen(viewModel: MainViewModel) {
             VkTopAppBar()
         },
         bottomBar = {
-            VkNavigationBar(viewModel)
+            VkNavigationBar(navHostController)
         },
     ) { paddingValues ->
 
-        when (selectedNavItem) {
-            NavigationItem.Home -> HomeScreen(viewModel, paddingValues)
-            NavigationItem.Message -> TextCounter("Message", paddingValues)
-            NavigationItem.Settings -> TextCounter("Settings", paddingValues)
-        }
+        AppNavGraph(
+            navHostController = navHostController,
+            homeScreenContent = { HomeScreen(viewModel, paddingValues) },
+            favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
+            profileScreen = { TextCounter("profileScreen", paddingValues) }
+        )
 
     }
 }
 
 @Composable
-private fun TextCounter(name: String, paddingValues : PaddingValues) {
+private fun TextCounter(name: String, paddingValues: PaddingValues) {
     var count by remember {
         mutableIntStateOf(0)
     }
@@ -82,5 +91,5 @@ private fun TextCounter(name: String, paddingValues : PaddingValues) {
         text = "$name Count: $count",
         color = Color.Black,
 
-    )
+        )
 }

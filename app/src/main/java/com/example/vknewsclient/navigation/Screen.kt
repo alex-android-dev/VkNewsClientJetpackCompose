@@ -1,5 +1,7 @@
 package com.example.vknewsclient.navigation
 
+// Класс, где хранятся все экраны
+// Объект содержит название экрана в виде строки
 sealed class Screen(
     val route: String
 ) {
