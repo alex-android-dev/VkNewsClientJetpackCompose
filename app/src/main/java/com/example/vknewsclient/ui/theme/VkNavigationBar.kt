@@ -7,24 +7,24 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.vknewsclient.MainViewModel
+import androidx.compose.runtime.getValue
+
 
 @Composable
-fun VkNavigationBar() {
+fun VkNavigationBar(viewModel: MainViewModel) {
     val items = listOf(NavigationItem.Home, NavigationItem.Message, NavigationItem.Settings)
-
-    val selectedItemPosition = remember { mutableIntStateOf(0) }
+    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        items.forEachIndexed { index, item ->
+        items.forEach { item ->
             NavigationBarItem(
-                selected = selectedItemPosition.intValue == index,
-                onClick = { selectedItemPosition.intValue = index },
+                selected = selectedNavItem == item,
+                onClick = { viewModel.selectedNavItem(item) },
                 icon = { Icon(item.icon, contentDescription = item.icon.name) },
                 label = { Text(stringResource(item.titleResId)) },
                 colors = NavigationBarItemDefaults.colors(
@@ -34,26 +34,5 @@ fun VkNavigationBar() {
                 )
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewPostCardLight() {
-    VkNewsClientTheme(
-        darkTheme = false
-    ) {
-        VkNavigationBar()
-    }
-}
-
-
-@Preview
-@Composable
-private fun PreviewPostCardDark() {
-    VkNewsClientTheme(
-        darkTheme = true
-    ) {
-        VkNavigationBar()
     }
 }
