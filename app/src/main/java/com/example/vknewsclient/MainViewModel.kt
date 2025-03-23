@@ -20,47 +20,51 @@ class MainViewModel : ViewModel() {
     }
 
     private val _feedPostsLiveData = MutableLiveData<List<FeedPost>>(initialList)
-    val feedPostsLiveData = _feedPostsLiveData as LiveData<List<FeedPost>>
+    val feedPostsLiveData: LiveData<List<FeedPost>>
+        get() = _feedPostsLiveData
 
-    fun deletePost(feedPost: FeedPost) {
+    fun removePost(feedPost: FeedPost) {
         Log.d("MainViewModel", "fun delete")
         Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
-        val feedPostList = _feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
-        feedPostList.remove(feedPost)
-        _feedPostsLiveData.value = feedPostList
+        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        oldFeedPostList.remove(feedPost)
+        _feedPostsLiveData.value = oldFeedPostList
         Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
-
+        Log.d("MainViewModel", "${_feedPostsLiveData.value}")
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
 
-        val feedPostList = _feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
 
-        feedPostList.forEachIndexed { index, post ->
-            if (post == feedPost) {
+        val oldFeedPostStatistics = feedPost.statistics
 
-                val newStatistic = post.statistics.toMutableList().apply {
-                    replaceAll { oldItem ->
-                        if (oldItem.type == statisticItem.type) {
-                            Log.d("MainViewModel", "oldItem: ${oldItem.type}")
-                            Log.d("MainViewModel", "statisticItem: ${statisticItem.type}")
-
-                            oldItem.copy(count = oldItem.count + 1)
-                        } else oldItem
-                    }
+        val newStatistics = oldFeedPostStatistics.toMutableList().apply {
+            replaceAll { oldItem ->
+                if (oldItem.type == statisticItem.type) {
+                    oldItem.copy(count = oldItem.count + 1)
+                } else {
+                    oldItem
                 }
-
-                feedPostList[index] = post.copy(
-                    statistics = newStatistic
-                )
-
             }
-
         }
 
-        _feedPostsLiveData.value = feedPostList
+        val newFeedPost = feedPost.copy(
+            statistics = newStatistics
+        )
+
+        _feedPostsLiveData.value = oldFeedPostList.apply {
+            replaceAll {
+                if (it.id == newFeedPost.id) {
+                    newFeedPost
+                } else {
+                    it
+                }
+            }
+        }
 
         Log.d("MainViewModel", "${_feedPostsLiveData.value?.get(0)?.statistics}")
+        Log.d("MainViewModel", "${_feedPostsLiveData.value}")
 
     }
 }

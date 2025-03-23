@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,6 +50,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainScreen(viewModel: MainViewModel) {
+    val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
+
+
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -71,13 +77,20 @@ private fun MainScreen(viewModel: MainViewModel) {
 
 @Composable
 private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
+
     val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
+    Log.d("MainActivity", "feedposts state: ${feedPosts.value.size}")
     val lazyStateList = rememberLazyListState()
 
     LazyColumn(
         modifier = Modifier.background(
             MaterialTheme.colorScheme.background,
         ),
+        contentPadding = PaddingValues(
+            start = 8.dp,
+            end = 8.dp,
+        ),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         state = lazyStateList,
     ) {
 
@@ -95,20 +108,20 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
                 confirmValueChange = { value ->
                     Log.d("MainActivity", "Swipe to delete")
                     val isDismissed = value == SwipeToDismissBoxValue.EndToStart
-                    Log.d("MainActivity", "$isDismissed")
-                    if (isDismissed) viewModel.deletePost(feedPost)
+                    Log.d("MainActivity", "feedpost status delete: $feedPost")
+                    if (isDismissed) viewModel.removePost(feedPost)
                     true
                 }
             )
 
             SwipeToDismissBox(
+                modifier = Modifier.animateItem(),
                 state = dismissState,
                 enableDismissFromEndToStart = true,
                 enableDismissFromStartToEnd = false,
                 backgroundContent = {},
             ) {
                 PostCard(
-                    modifier = Modifier.padding(8.dp),
                     feedPost,
                     onLikeClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
@@ -118,6 +131,7 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
                     },
                     onViewsClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
+                        Log.d("MainActivity", "feedpost status onView: ${feedPost}")
                     },
                     onCommentClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
@@ -128,10 +142,4 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
 
         }
     }
-
-
 }
-
-// Отображение Lazy Column
-// Клики работают на отдельный пост
-// todo Удаление при помощи свайпа
