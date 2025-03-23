@@ -16,5 +16,13 @@
         Настройки
     </string>
 
+    <string name="nav_item_favourite">
+        Избранное
+    </string>
+
+    <string name="nav_item_profile">
+        Профиль
+    </string>
+
 
 </resources>
