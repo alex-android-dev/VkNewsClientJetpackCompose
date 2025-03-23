@@ -35,7 +35,6 @@ import com.example.vknewsclient.domain.StatisticType
 
 @Composable
 fun PostCard(
-    modifier: Modifier = Modifier,
     feedPost: FeedPost,
     onLikeClickListener: (StatisticItem) -> Unit,
     onShareClickListener: (StatisticItem) -> Unit,
@@ -43,7 +42,6 @@ fun PostCard(
     onCommentClickListener: (StatisticItem) -> Unit,
 ) {
     Card(
-        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
