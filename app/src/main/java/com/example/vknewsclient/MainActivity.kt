@@ -1,6 +1,7 @@
 package com.example.vknewsclient
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,11 +15,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.ui.theme.PostCard
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
@@ -59,11 +64,7 @@ private fun MainScreen(viewModel: MainViewModel) {
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-
-
             VkNewsFeedLazyColumn(viewModel)
-
-
         }
     }
 }
@@ -71,7 +72,6 @@ private fun MainScreen(viewModel: MainViewModel) {
 @Composable
 private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
     val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
-
     val lazyStateList = rememberLazyListState()
 
     LazyColumn(
@@ -85,22 +85,47 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
             items = feedPosts.value,
             key = { it.id }
         ) { feedPost ->
-            PostCard(
-                modifier = Modifier.padding(8.dp),
-                feedPost,
-                onLikeClickListener = {
-                    viewModel.updateStatisticCard(feedPost, it)
-                },
-                onShareClickListener = {
-                    viewModel.updateStatisticCard(feedPost, it)
-                },
-                onViewsClickListener = {
-                    viewModel.updateStatisticCard(feedPost, it)
-                },
-                onCommentClickListener = {
-                    viewModel.updateStatisticCard(feedPost, it)
-                },
+
+            val dismissThresholds = with(receiver = LocalDensity.current) {
+                LocalConfiguration.current.screenWidthDp.dp.toPx() * 0.30f
+            }
+
+            val dismissState = rememberSwipeToDismissBoxState(
+                positionalThreshold = { dismissThresholds },
+                confirmValueChange = { value ->
+                    Log.d("MainActivity", "Swipe to delete")
+                    val isDismissed = value == SwipeToDismissBoxValue.EndToStart
+                    Log.d("MainActivity", "$isDismissed")
+                    if (isDismissed) viewModel.deletePost(feedPost)
+                    true
+                }
             )
+
+            SwipeToDismissBox(
+                state = dismissState,
+                enableDismissFromEndToStart = true,
+                enableDismissFromStartToEnd = false,
+                backgroundContent = {},
+            ) {
+                PostCard(
+                    modifier = Modifier.padding(8.dp),
+                    feedPost,
+                    onLikeClickListener = {
+                        viewModel.updateStatisticCard(feedPost, it)
+                    },
+                    onShareClickListener = {
+                        viewModel.updateStatisticCard(feedPost, it)
+                    },
+                    onViewsClickListener = {
+                        viewModel.updateStatisticCard(feedPost, it)
+                    },
+                    onCommentClickListener = {
+                        viewModel.updateStatisticCard(feedPost, it)
+                    },
+                )
+            }
+
+
         }
     }
 

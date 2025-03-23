@@ -22,6 +22,16 @@ class MainViewModel : ViewModel() {
     private val _feedPostsLiveData = MutableLiveData<List<FeedPost>>(initialList)
     val feedPostsLiveData = _feedPostsLiveData as LiveData<List<FeedPost>>
 
+    fun deletePost(feedPost: FeedPost) {
+        Log.d("MainViewModel", "fun delete")
+        Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
+        val feedPostList = _feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        feedPostList.remove(feedPost)
+        _feedPostsLiveData.value = feedPostList
+        Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
+
+    }
+
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
 
         val feedPostList = _feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
