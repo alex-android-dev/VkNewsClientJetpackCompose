@@ -51,9 +51,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MainScreen(viewModel: MainViewModel) {
     val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
-
-
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -131,15 +128,13 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
                     },
                     onViewsClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
-                        Log.d("MainActivity", "feedpost status onView: ${feedPost}")
+                        Log.d("MainActivity", "feedpost status onView: $feedPost")
                     },
                     onCommentClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
                     },
                 )
             }
-
-
         }
     }
 }
