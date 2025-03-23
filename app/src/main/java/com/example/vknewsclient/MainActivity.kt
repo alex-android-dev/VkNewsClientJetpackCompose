@@ -22,6 +22,8 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -100,20 +102,21 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
                 LocalConfiguration.current.screenWidthDp.dp.toPx() * 0.30f
             }
 
-            val dismissState = rememberSwipeToDismissBoxState(
+            val dismissState = remember { mutableStateOf(SwipeToDismissBoxValue.Settled) }
+
+            val state = rememberSwipeToDismissBoxState(
                 positionalThreshold = { dismissThresholds },
                 confirmValueChange = { value ->
-                    Log.d("MainActivity", "Swipe to delete")
                     val isDismissed = value == SwipeToDismissBoxValue.EndToStart
-                    Log.d("MainActivity", "feedpost status delete: $feedPost")
                     if (isDismissed) viewModel.removePost(feedPost)
                     true
                 }
             )
 
+
             SwipeToDismissBox(
                 modifier = Modifier.animateItem(),
-                state = dismissState,
+                state = state,
                 enableDismissFromEndToStart = true,
                 enableDismissFromStartToEnd = false,
                 backgroundContent = {},
@@ -128,7 +131,6 @@ private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
                     },
                     onViewsClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
-                        Log.d("MainActivity", "feedpost status onView: $feedPost")
                     },
                     onCommentClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)
