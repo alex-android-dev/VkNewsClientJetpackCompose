@@ -2,6 +2,7 @@ package com.example.vknewsclient.ui.theme
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,7 +24,7 @@ sealed class NavigationItem(
     object Favourite : NavigationItem(
         screen = Screen.Favorite,
         titleResId = R.string.nav_item_favourite,
-        icon = Icons.Filled.Email,
+        icon = Icons.Filled.Favorite,
     )
 
     object Settings : NavigationItem(
