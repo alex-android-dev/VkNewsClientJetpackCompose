@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
+import com.example.vknewsclient.ui.theme.NavigationItem
 
 class MainViewModel : ViewModel() {
 
@@ -24,16 +25,10 @@ class MainViewModel : ViewModel() {
         get() = _feedPostsLiveData
 
     fun removePost(feedPost: FeedPost) {
-        Log.d("MainViewModel", "fun delete")
-        Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
-
         val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
         val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
         oldFeedPostList.remove(feedPostForDelete)
-
         _feedPostsLiveData.value = oldFeedPostList
-        Log.d("MainViewModel", _feedPostsLiveData.value?.size.toString())
-        Log.d("MainViewModel", "${_feedPostsLiveData.value}")
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {

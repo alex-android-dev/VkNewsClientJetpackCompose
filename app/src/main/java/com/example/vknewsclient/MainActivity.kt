@@ -1,36 +1,42 @@
 package com.example.vknewsclient
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
-import com.example.vknewsclient.ui.theme.PostCard
-import com.example.vknewsclient.ui.theme.VkNavigationBar
+import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.NavigationState
+import com.example.vknewsclient.navigation.rememberNavigationState
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
+import com.example.vknewsclient.ui.theme.HomeScreen
+import com.example.vknewsclient.ui.theme.NavigationItem
+import com.example.vknewsclient.ui.theme.TextCounter
+import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkTopAppBar
 
 class MainActivity : ComponentActivity() {
@@ -52,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainScreen(viewModel: MainViewModel) {
-    val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
+    val navigationState = rememberNavigationState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -61,82 +68,16 @@ private fun MainScreen(viewModel: MainViewModel) {
             VkTopAppBar()
         },
         bottomBar = {
-            VkNavigationBar()
+            VkNavigationBar(navigationState)
         },
     ) { paddingValues ->
 
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-        ) {
-            VkNewsFeedLazyColumn(viewModel)
-        }
-    }
-}
+        AppNavGraph(
+            navHostController = navigationState.navHostController,
+            homeScreenContent = { HomeScreen(viewModel, paddingValues) },
+            favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
+            profileScreen = { TextCounter("profileScreen", paddingValues) }
+        )
 
-@Composable
-private fun VkNewsFeedLazyColumn(viewModel: MainViewModel) {
-
-    val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
-    Log.d("MainActivity", "feedposts state: ${feedPosts.value.size}")
-    val lazyStateList = rememberLazyListState()
-
-    LazyColumn(
-        modifier = Modifier.background(
-            MaterialTheme.colorScheme.background,
-        ),
-        contentPadding = PaddingValues(
-            start = 8.dp,
-            end = 8.dp,
-        ),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        state = lazyStateList,
-    ) {
-
-        items(
-            items = feedPosts.value,
-            key = { it.id }
-        ) { feedPost ->
-
-            val dismissThresholds = with(receiver = LocalDensity.current) {
-                LocalConfiguration.current.screenWidthDp.dp.toPx() * 0.30f
-            }
-
-            val dismissState = remember { mutableStateOf(SwipeToDismissBoxValue.Settled) }
-
-            val state = rememberSwipeToDismissBoxState(
-                positionalThreshold = { dismissThresholds },
-                confirmValueChange = { value ->
-                    val isDismissed = value == SwipeToDismissBoxValue.EndToStart
-                    if (isDismissed) viewModel.removePost(feedPost)
-                    true
-                }
-            )
-
-
-            SwipeToDismissBox(
-                modifier = Modifier.animateItem(),
-                state = state,
-                enableDismissFromEndToStart = true,
-                enableDismissFromStartToEnd = false,
-                backgroundContent = {},
-            ) {
-                PostCard(
-                    feedPost,
-                    onLikeClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                    onShareClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                    onViewsClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                    onCommentClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                )
-            }
-        }
     }
 }

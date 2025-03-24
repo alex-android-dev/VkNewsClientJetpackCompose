@@ -7,24 +7,36 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.NavigatorState
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.navigation.NavigationState
+import com.example.vknewsclient.navigation.Screen
+
 
 @Composable
-fun VkNavigationBar() {
-    val items = listOf(NavigationItem.Home, NavigationItem.Message, NavigationItem.Settings)
-
-    val selectedItemPosition = remember { mutableIntStateOf(0) }
+fun VkNavigationBar(navigationState: NavigationState) {
+    val items =
+        listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Settings)
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        items.forEachIndexed { index, item ->
+        val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState() // Хранит текущий открытый экран
+
+        val currentRoute =
+            navBackStackEntry?.destination?.route // Получаем название экрана, который сейчас открыт
+
+        items.forEach { item ->
             NavigationBarItem(
-                selected = selectedItemPosition.intValue == index,
-                onClick = { selectedItemPosition.intValue = index },
+                selected = currentRoute == item.screen.route, // Совпадает ли открытый экран с элементом по которому был произведён клик
+                onClick = {
+                    navigationState.navigateTo(item.screen.route)
+                },
                 icon = { Icon(item.icon, contentDescription = item.icon.name) },
                 label = { Text(stringResource(item.titleResId)) },
                 colors = NavigationBarItemDefaults.colors(
@@ -35,25 +47,5 @@ fun VkNavigationBar() {
             )
         }
     }
-}
 
-@Preview
-@Composable
-private fun PreviewPostCardLight() {
-    VkNewsClientTheme(
-        darkTheme = false
-    ) {
-        VkNavigationBar()
-    }
-}
-
-
-@Preview
-@Composable
-private fun PreviewPostCardDark() {
-    VkNewsClientTheme(
-        darkTheme = true
-    ) {
-        VkNavigationBar()
-    }
 }
