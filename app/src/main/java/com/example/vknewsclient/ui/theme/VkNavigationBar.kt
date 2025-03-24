@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.navigation.Screen
 
 
 @Composable
@@ -31,7 +31,16 @@ fun VkNavigationBar(navHostController: NavHostController) {
             NavigationBarItem(
                 selected = currentRoute == item.screen.route, // Совпадает ли открытый экран с элементом по которому был произведён клик
                 onClick = {
-                    navHostController.navigate(item.screen.route) // Передаем путь к экрану
+                    navHostController.navigate(item.screen.route) {
+                        launchSingleTop = true // Теперь объекты Вью падают в бэкстэк только уникальные
+
+                        popUpTo(Screen.NewsFeed.route) {
+                            saveState = true // при удалении экранов из бэкстэка их стейт сохраняется
+                        }
+                        // Удаляет все элементы из бэкстэка до текущего. Текущий экран находится всегда наверху бэкстэка
+
+                        restoreState = true // Позволяет восстановить стейт элементов, которые мы сохранили
+                    }
                 },
                 icon = { Icon(item.icon, contentDescription = item.icon.name) },
                 label = { Text(stringResource(item.titleResId)) },
