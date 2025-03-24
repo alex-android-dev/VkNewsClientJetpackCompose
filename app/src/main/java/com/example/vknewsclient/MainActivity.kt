@@ -30,9 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.NavigationState
+import com.example.vknewsclient.navigation.rememberNavigationState
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.example.vknewsclient.ui.theme.HomeScreen
 import com.example.vknewsclient.ui.theme.NavigationItem
+import com.example.vknewsclient.ui.theme.TextCounter
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkTopAppBar
 
@@ -55,7 +58,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainScreen(viewModel: MainViewModel) {
-    val navHostController = rememberNavController()
+    val navigationState = rememberNavigationState()
 
     Scaffold(
         modifier = Modifier
@@ -65,32 +68,16 @@ private fun MainScreen(viewModel: MainViewModel) {
             VkTopAppBar()
         },
         bottomBar = {
-            VkNavigationBar(navHostController)
+            VkNavigationBar(navigationState)
         },
     ) { paddingValues ->
 
         AppNavGraph(
-            navHostController = navHostController,
+            navHostController = navigationState.navHostController,
             homeScreenContent = { HomeScreen(viewModel, paddingValues) },
             favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
             profileScreen = { TextCounter("profileScreen", paddingValues) }
         )
 
     }
-}
-
-@Composable
-private fun TextCounter(name: String, paddingValues: PaddingValues) {
-    var count by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-    Text(
-        modifier = Modifier
-            .clickable { count++ }
-            .padding(paddingValues),
-        text = "$name Count: $count",
-        color = Color.Black,
-
-        )
 }

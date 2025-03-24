@@ -8,22 +8,26 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavigatorState
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.navigation.NavigationState
 import com.example.vknewsclient.navigation.Screen
 
 
 @Composable
-fun VkNavigationBar(navHostController: NavHostController) {
-
+fun VkNavigationBar(navigationState: NavigationState) {
     val items =
         listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Settings)
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        val navBackStackEntry by navHostController.currentBackStackEntryAsState() // Хранит текущий открытый экран
+        val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState() // Хранит текущий открытый экран
+
         val currentRoute =
             navBackStackEntry?.destination?.route // Получаем название экрана, который сейчас открыт
 
@@ -31,19 +35,7 @@ fun VkNavigationBar(navHostController: NavHostController) {
             NavigationBarItem(
                 selected = currentRoute == item.screen.route, // Совпадает ли открытый экран с элементом по которому был произведён клик
                 onClick = {
-                    navHostController.navigate(item.screen.route) {
-                        launchSingleTop =
-                            true // Теперь объекты Вью падают в бэкстэк только уникальные
-
-                        popUpTo(Screen.NewsFeed.route) {
-                            saveState =
-                                true // при удалении экранов из бэкстэка их стейт сохраняется
-                        }
-                        // Удаляет все элементы из бэкстэка до текущего. Текущий экран находится всегда наверху бэкстэка
-
-                        restoreState =
-                            true // Позволяет восстановить стейт элементов, которые мы сохранили
-                    }
+                    navigationState.navigateTo(item.screen.route)
                 },
                 icon = { Icon(item.icon, contentDescription = item.icon.name) },
                 label = { Text(stringResource(item.titleResId)) },
