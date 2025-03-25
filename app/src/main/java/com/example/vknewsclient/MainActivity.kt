@@ -70,14 +70,10 @@ private fun MainScreen(viewModel: MainViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        topBar = {
-            VkTopAppBar(VK_TITLE_SCAFFOLD_STR, Icons.Filled.Menu)
-        },
         bottomBar = {
             VkNavigationBar(navigationState)
         },
     ) { paddingValues ->
-
         AppNavGraph(
             navHostController = navigationState.navHostController,
             homeScreenContent = { HomeScreen(viewModel, paddingValues) },

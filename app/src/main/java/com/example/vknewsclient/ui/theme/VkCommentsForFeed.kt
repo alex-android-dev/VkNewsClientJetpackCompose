@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.MainViewModel
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 
@@ -33,13 +35,17 @@ const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 fun VkCommentsForFeedPosts(
     postCommentsList: List<PostComment>,
     feedPost: FeedPost,
+    onBackPressed: () -> Unit,
 ) {
-
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         topBar = {
             VkTopAppBar(
                 "$COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR id: ${feedPost.id}",
                 Icons.AutoMirrored.Filled.ArrowBack,
+                onIconClickListener = { onBackPressed() }
             )
         },
     ) { paddingValues ->
@@ -47,6 +53,7 @@ fun VkCommentsForFeedPosts(
     }
 
 }
+
 
 @Composable
 fun LazyColumnCommentsForFeedPost(
@@ -61,10 +68,6 @@ fun LazyColumnCommentsForFeedPost(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .padding(paddingValues)
-            .padding(
-                horizontal = 5.dp,
-                vertical = 10.dp
-            )
             .fillMaxWidth(),
         contentPadding = PaddingValues(
             start = 8.dp,
@@ -114,26 +117,30 @@ fun CommentItem(postComment: PostComment) {
     }
 }
 
-@Preview
-@Composable
-fun PreviewPostComment() {
+//@Preview
+//@Composable
+//fun PreviewPostComment() {
+//
+//    val postCommentsList = mutableListOf<PostComment>().apply {
+//        repeat(20) {
+//            add(
+//                PostComment(
+//                    id = it,
+//                    authorName = "author number $it",
+//                )
+//            )
+//        }
+//    }.toList()
+//
+//    val feedPost = FeedPost(
+//        id = 85
+//    )
+//
+//
+//    VkCommentsForFeedPosts(postCommentsList, feedPost)
+//
+//}
 
-    val postCommentsList = mutableListOf<PostComment>().apply {
-        repeat(20) {
-            add(
-                PostComment(
-                    id = it,
-                    authorName = "author number $it",
-                )
-            )
-        }
-    }.toList()
 
-    val feedPost = FeedPost(
-        id = 85
-    )
-
-
-    VkCommentsForFeedPosts(postCommentsList, feedPost)
-
-}
+// todo: остался баг последний комментарий почему-то не отображается
+// todo нужно копнуть в paddingValues Scaffold bottom bar'a

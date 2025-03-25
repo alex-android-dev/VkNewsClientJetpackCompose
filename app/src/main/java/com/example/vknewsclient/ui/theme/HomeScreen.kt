@@ -1,13 +1,19 @@
 package com.example.vknewsclient.ui.theme
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -18,8 +24,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.MainViewModel
+import com.example.vknewsclient.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.HomeScreenState
+import com.example.vknewsclient.navigation.AppNavGraph
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
@@ -27,18 +35,45 @@ fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
     val screenState = viewModel.screenState.observeAsState(HomeScreenState.Initial)
 
     when (val currentState = screenState.value) {
-        is HomeScreenState.Comments -> VkCommentsForFeedPosts(
-            postCommentsList = currentState.comments,
-            feedPost = currentState.post,
-        )
+        is HomeScreenState.Comments -> {
+            VkCommentsForFeedPosts(
+                postCommentsList = currentState.comments,
+                feedPost = currentState.post,
+                onBackPressed = { viewModel.closeComments() },
+            )
 
-        is HomeScreenState.Posts -> LazyColumnFeedPosts(
+            BackHandler {
+                viewModel.closeComments()
+            } // При нажатии на кнопку назад
+        }
+
+        is HomeScreenState.Posts -> VkNewsFeedScreen(
             posts = currentState.posts,
             viewModel = viewModel,
             paddingValues = paddingValues,
         )
 
         is HomeScreenState.Initial -> {}
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+private fun VkNewsFeedScreen(
+    posts: List<FeedPost>,
+    viewModel: MainViewModel,
+    paddingValues: PaddingValues,
+) {
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(paddingValues),
+        topBar = {
+            VkTopAppBar(VK_TITLE_SCAFFOLD_STR, Icons.Filled.Menu, {})
+        },
+    ) { paddingValues ->
+        LazyColumnFeedPosts(posts, viewModel, paddingValues)
     }
 }
 
@@ -99,7 +134,7 @@ private fun LazyColumnFeedPosts(
                         viewModel.updateStatisticCard(feedPost, it)
                     },
                     onCommentClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
+                        viewModel.showComments(feedPost)
                     },
                 )
             }
