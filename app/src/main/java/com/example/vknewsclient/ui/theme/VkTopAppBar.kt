@@ -8,16 +8,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VkTopAppBar() {
+fun VkTopAppBar(title: String,
+                imageVector: ImageVector) {
     TopAppBar(
-        title = { Text(text = "VK clone") },
+        title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = { }) {
                 Icon(
-                    Icons.Filled.Menu,
+                    imageVector = imageVector,
                     contentDescription = null
                 )
             }
