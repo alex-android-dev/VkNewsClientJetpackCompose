@@ -5,12 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.HomeScreenState
 import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.ui.theme.NavigationItem
 
 class MainViewModel : ViewModel() {
 
-    private val initialList = mutableListOf<FeedPost>().apply {
+    private val postInitialList = mutableListOf<FeedPost>().apply {
         repeat(50) {
             add(
                 FeedPost(
@@ -20,20 +20,22 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private val _feedPostsLiveData = MutableLiveData<List<FeedPost>>(initialList)
-    val feedPostsLiveData: LiveData<List<FeedPost>>
-        get() = _feedPostsLiveData
+    private val initialState = HomeScreenState.Posts(postInitialList)
+
+    private val _screenState = MutableLiveData<HomeScreenState>(initialState)
+    val screenState: LiveData<HomeScreenState>
+        get() = _screenState
 
     fun removePost(feedPost: FeedPost) {
-        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        val oldFeedPostList = screenState.value.toMutableList() ?: mutableListOf()
         val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
         oldFeedPostList.remove(feedPostForDelete)
-        _feedPostsLiveData.value = oldFeedPostList
+        _screenState.value = oldFeedPostList
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
 
-        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        val oldFeedPostList = screenState.value?.toMutableList() ?: mutableListOf()
 
         val oldFeedPostStatistics = feedPost.statistics
 
@@ -51,7 +53,7 @@ class MainViewModel : ViewModel() {
             statistics = newStatistics
         )
 
-        _feedPostsLiveData.value = oldFeedPostList.apply {
+        _screenState.value = oldFeedPostList.apply {
             replaceAll {
                 if (it.id == newFeedPost.id) {
                     newFeedPost
@@ -61,8 +63,8 @@ class MainViewModel : ViewModel() {
             }
         }
 
-        Log.d("MainViewModel", "${_feedPostsLiveData.value?.get(0)?.statistics}")
-        Log.d("MainViewModel", "${_feedPostsLiveData.value}")
+        Log.d("MainViewModel", "${_screenState.value?.get(0)?.statistics}")
+        Log.d("MainViewModel", "${_screenState.value}")
 
     }
 }

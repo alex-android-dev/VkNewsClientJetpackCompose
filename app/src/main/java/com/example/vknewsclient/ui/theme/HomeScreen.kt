@@ -1,6 +1,5 @@
 package com.example.vknewsclient.ui.theme
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,12 +18,36 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.MainViewModel
+import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.HomeScreenState
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
 
-    val feedPosts = viewModel.feedPostsLiveData.observeAsState(listOf())
-    Log.d("MainActivity", "feedposts state: ${feedPosts.value.size}")
+    val screenState = viewModel.screenState.observeAsState(HomeScreenState.Initial)
+
+    when (val currentState = screenState.value) {
+        is HomeScreenState.Comments -> VkCommentsForFeedPosts(
+            postCommentsList = currentState.comments,
+            feedPost = currentState.post,
+        )
+
+        is HomeScreenState.Posts -> LazyColumnFeedPosts(
+            posts = currentState.posts,
+            viewModel = viewModel,
+            paddingValues = paddingValues,
+        )
+
+        is HomeScreenState.Initial -> {}
+    }
+}
+
+@Composable
+private fun LazyColumnFeedPosts(
+    posts: List<FeedPost>,
+    viewModel: MainViewModel,
+    paddingValues: PaddingValues,
+) {
     val lazyStateList = rememberLazyListState()
 
     LazyColumn(
@@ -40,7 +63,7 @@ fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
     ) {
 
         items(
-            items = feedPosts.value,
+            items = posts,
             key = { it.id }
         ) { feedPost ->
 

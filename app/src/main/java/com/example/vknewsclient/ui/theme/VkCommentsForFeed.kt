@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 
 const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
@@ -31,13 +32,13 @@ const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 @Composable
 fun VkCommentsForFeedPosts(
     postCommentsList: List<PostComment>,
-    postId: Int,
+    feedPost: FeedPost,
 ) {
 
     Scaffold(
         topBar = {
             VkTopAppBar(
-                "$COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR id: $postId",
+                "$COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR id: ${feedPost.id}",
                 Icons.AutoMirrored.Filled.ArrowBack,
             )
         },
@@ -60,6 +61,10 @@ fun LazyColumnCommentsForFeedPost(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .padding(paddingValues)
+            .padding(
+                horizontal = 5.dp,
+                vertical = 10.dp
+            )
             .fillMaxWidth(),
         contentPadding = PaddingValues(
             start = 8.dp,
@@ -74,16 +79,14 @@ fun LazyColumnCommentsForFeedPost(
             key = { it.id }
         ) { postComment ->
 
-            PostComment(postComment)
+            CommentItem(postComment)
 
         }
     }
-
-
 }
 
 @Composable
-fun PostComment(postComment: PostComment) {
+fun CommentItem(postComment: PostComment) {
 
     Row(
         modifier = Modifier
@@ -99,7 +102,7 @@ fun PostComment(postComment: PostComment) {
             contentDescription = null
         )
 
-        Spacer(modifier = Modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(
             verticalArrangement = Arrangement.spacedBy(3.dp)
@@ -116,7 +119,7 @@ fun PostComment(postComment: PostComment) {
 fun PreviewPostComment() {
 
     val postCommentsList = mutableListOf<PostComment>().apply {
-        repeat(10) {
+        repeat(20) {
             add(
                 PostComment(
                     id = it,
@@ -126,7 +129,11 @@ fun PreviewPostComment() {
         }
     }.toList()
 
+    val feedPost = FeedPost(
+        id = 85
+    )
 
-    VkCommentsForFeedPosts(postCommentsList, 33)
+
+    VkCommentsForFeedPosts(postCommentsList, feedPost)
 
 }
