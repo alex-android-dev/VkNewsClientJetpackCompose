@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.NavigationState
 import com.example.vknewsclient.navigation.rememberNavigationState
@@ -36,8 +39,11 @@ import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.example.vknewsclient.ui.theme.HomeScreen
 import com.example.vknewsclient.ui.theme.NavigationItem
 import com.example.vknewsclient.ui.theme.TextCounter
+import com.example.vknewsclient.ui.theme.VkCommentsForFeedPosts
 import com.example.vknewsclient.ui.theme.VkNavigationBar
 import com.example.vknewsclient.ui.theme.VkTopAppBar
+
+const val VK_TITLE_SCAFFOLD_STR = "VK Clone"
 
 class MainActivity : ComponentActivity() {
 
@@ -64,19 +70,15 @@ private fun MainScreen(viewModel: MainViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        topBar = {
-            VkTopAppBar()
-        },
         bottomBar = {
             VkNavigationBar(navigationState)
         },
     ) { paddingValues ->
-
         AppNavGraph(
             navHostController = navigationState.navHostController,
             homeScreenContent = { HomeScreen(viewModel, paddingValues) },
             favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
-            profileScreen = { TextCounter("profileScreen", paddingValues) }
+            profileScreen = { TextCounter("profileScreen", paddingValues) },
         )
 
     }

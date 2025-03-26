@@ -1,40 +1,78 @@
 package com.example.vknewsclient
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.HomeScreenState
+import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.ui.theme.NavigationItem
 
 class MainViewModel : ViewModel() {
 
-    private val initialList = mutableListOf<FeedPost>().apply {
-        repeat(50) {
-            add(
-                FeedPost(
-                    id = it
+    private val postInitialList by lazy {
+        mutableListOf<FeedPost>().apply {
+            repeat(10) {
+                add(
+                    FeedPost(
+                        id = it
+                    )
                 )
-            )
+            }
         }
     }
 
-    private val _feedPostsLiveData = MutableLiveData<List<FeedPost>>(initialList)
-    val feedPostsLiveData: LiveData<List<FeedPost>>
-        get() = _feedPostsLiveData
+    private val postCommentsList by lazy {
+        mutableListOf<PostComment>().apply {
+            repeat(25) {
+                add(
+                    PostComment(
+                        id = it,
+                        authorName = "author number $it",
+                    )
+                )
+            }
+        }.toList()
+    }
+
+    private val initialState = HomeScreenState.Posts(postInitialList)
+
+    private val _screenState = MutableLiveData<HomeScreenState>(initialState)
+    val screenState: LiveData<HomeScreenState>
+        get() = _screenState
+
+    private var savedState: HomeScreenState? = initialState
+
+    fun showComments(feedPost: FeedPost) {
+        savedState = _screenState.value
+
+        val currentState = screenState.value
+        if (currentState !is HomeScreenState.Posts) return
+
+        _screenState.value =
+            HomeScreenState.Comments(post = feedPost, comments = postCommentsList)
+    }
+
+    fun closeComments() {
+        if (savedState != null) _screenState.value = savedState
+    }
 
     fun removePost(feedPost: FeedPost) {
-        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
+        val currentState = screenState.value
+        if (currentState !is HomeScreenState.Posts) return
+
+        val oldFeedPostList = currentState.posts.toMutableList()
+
         val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
         oldFeedPostList.remove(feedPostForDelete)
-        _feedPostsLiveData.value = oldFeedPostList
+        _screenState.value = HomeScreenState.Posts(oldFeedPostList)
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
+        val currentState = screenState.value
+        if (currentState !is HomeScreenState.Posts) return
 
-        val oldFeedPostList = feedPostsLiveData.value?.toMutableList() ?: mutableListOf()
-
+        val oldFeedPostList = currentState.posts.toMutableList()
         val oldFeedPostStatistics = feedPost.statistics
 
         val newStatistics = oldFeedPostStatistics.toMutableList().apply {
@@ -51,7 +89,7 @@ class MainViewModel : ViewModel() {
             statistics = newStatistics
         )
 
-        _feedPostsLiveData.value = oldFeedPostList.apply {
+        val newFeedPosts = oldFeedPostList.apply {
             replaceAll {
                 if (it.id == newFeedPost.id) {
                     newFeedPost
@@ -61,8 +99,6 @@ class MainViewModel : ViewModel() {
             }
         }
 
-        Log.d("MainViewModel", "${_feedPostsLiveData.value?.get(0)?.statistics}")
-        Log.d("MainViewModel", "${_feedPostsLiveData.value}")
-
+        _screenState.value = HomeScreenState.Posts(newFeedPosts)
     }
 }
