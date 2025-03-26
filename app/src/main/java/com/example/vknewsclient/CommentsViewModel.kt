@@ -8,7 +8,9 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import kotlin.random.Random
 
-class CommentsViewModel : ViewModel() {
+class CommentsViewModel(
+    feedPost: FeedPost,
+) : ViewModel() {
 
     private val _screenState = MutableLiveData<CommentsScreenState>(CommentsScreenState.Initial)
     val screenState: LiveData<CommentsScreenState>
@@ -16,7 +18,7 @@ class CommentsViewModel : ViewModel() {
 
 
     init {
-        loadComments(FeedPost())
+        loadComments(feedPost)
     }
 
     fun loadComments(feedPost: FeedPost) {

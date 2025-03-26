@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.CommentsViewModel
+import com.example.vknewsclient.CommentsViewModelFactory
 import com.example.vknewsclient.domain.CommentsScreenState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
@@ -36,8 +37,12 @@ const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 @Composable
 fun VkCommentsScreen(
     onBackPressed: () -> Unit,
+    feedPost: FeedPost,
 ) {
-    val viewModel: CommentsViewModel = viewModel()
+    val viewModel: CommentsViewModel = viewModel(
+        factory = CommentsViewModelFactory(feedPost),
+    )
+
     val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
     val currentState = screenState.value
 

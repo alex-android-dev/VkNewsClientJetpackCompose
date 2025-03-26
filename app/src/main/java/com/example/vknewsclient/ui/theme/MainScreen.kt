@@ -40,9 +40,10 @@ fun MainScreen() {
                         }
                     )
                 } else {
-                    VkCommentsScreen {
-                        commentsToPost.value = null
-                    }
+                    VkCommentsScreen(
+                        onBackPressed = { commentsToPost.value = null },
+                        feedPost = commentsToPost.value!! // TODO временное решение
+                    )
                 }
             },
             favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
