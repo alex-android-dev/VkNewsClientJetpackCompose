@@ -7,8 +7,6 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.HomeScreenState
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 class MainViewModel : ViewModel() {
 
