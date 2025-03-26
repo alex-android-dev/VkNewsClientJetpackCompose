@@ -20,40 +20,50 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.vknewsclient.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vknewsclient.CommentsViewModel
+import com.example.vknewsclient.CommentsViewModelFactory
+import com.example.vknewsclient.domain.CommentsScreenState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 
 const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 
 @Composable
-fun VkCommentsForFeedPosts(
-    postCommentsList: List<PostComment>,
-    feedPost: FeedPost,
+fun VkCommentsScreen(
     onBackPressed: () -> Unit,
+    feedPost: FeedPost,
 ) {
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        topBar = {
-            VkTopAppBar(
-                "$COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR id: ${feedPost.id}",
-                Icons.AutoMirrored.Filled.ArrowBack,
-                onIconClickListener = { onBackPressed() }
-            )
-        },
-    ) { paddingValues ->
-        LazyColumnCommentsForFeedPost(paddingValues, postCommentsList)
+    val viewModel: CommentsViewModel = viewModel(
+        factory = CommentsViewModelFactory(feedPost),
+    )
+
+    val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
+    val currentState = screenState.value
+
+    if (currentState is CommentsScreenState.Comments) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            topBar = {
+                VkTopAppBar(
+                    "$COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR id: ${currentState.post.id}",
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    onIconClickListener = { onBackPressed() }
+                )
+            },
+        ) { paddingValues ->
+            LazyColumnCommentsForFeedPost(paddingValues, currentState.comments)
+        }
+
     }
-
 }
-
 
 @Composable
 fun LazyColumnCommentsForFeedPost(
@@ -80,9 +90,9 @@ fun LazyColumnCommentsForFeedPost(
         items(
             items = postCommentsList,
             key = { it.id }
-        ) { postComment ->
+        ) { comment ->
 
-            CommentItem(postComment)
+            CommentItem(comment)
 
         }
     }

@@ -6,48 +6,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.navigation.AppNavGraph
-import com.example.vknewsclient.navigation.NavigationState
 import com.example.vknewsclient.navigation.rememberNavigationState
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.example.vknewsclient.ui.theme.HomeScreen
-import com.example.vknewsclient.ui.theme.NavigationItem
+import com.example.vknewsclient.ui.theme.MainScreen
 import com.example.vknewsclient.ui.theme.TextCounter
-import com.example.vknewsclient.ui.theme.VkCommentsForFeedPosts
 import com.example.vknewsclient.ui.theme.VkNavigationBar
-import com.example.vknewsclient.ui.theme.VkTopAppBar
+import kotlinx.coroutines.MainScope
 
 const val VK_TITLE_SCAFFOLD_STR = "VK Clone"
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,30 +32,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VkNewsClientTheme() {
-                MainScreen(viewModel)
+                MainScreen()
             }
         }
-    }
-}
-
-@Composable
-private fun MainScreen(viewModel: MainViewModel) {
-    val navigationState = rememberNavigationState()
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        bottomBar = {
-            VkNavigationBar(navigationState)
-        },
-    ) { paddingValues ->
-        AppNavGraph(
-            navHostController = navigationState.navHostController,
-            homeScreenContent = { HomeScreen(viewModel, paddingValues) },
-            favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
-            profileScreen = { TextCounter("profileScreen", paddingValues) },
-        )
-
     }
 }

@@ -4,15 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.HomeScreenState
-import com.example.vknewsclient.domain.PostComment
+import com.example.vknewsclient.domain.NewsFeedScreenState
 import com.example.vknewsclient.domain.StatisticItem
+import kotlin.random.Random
 
-class MainViewModel : ViewModel() {
+class NewsFeedViewModel : ViewModel() {
 
     private val postInitialList by lazy {
         mutableListOf<FeedPost>().apply {
-            repeat(10) {
+            repeat(Random.nextInt(15)) {
                 add(
                     FeedPost(
                         id = it
@@ -22,36 +22,13 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private val postCommentsList by lazy {
-        mutableListOf<PostComment>().apply {
-            repeat(25) {
-                add(
-                    PostComment(
-                        id = it,
-                        authorName = "author number $it",
-                    )
-                )
-            }
-        }.toList()
-    }
+    private val initialState = NewsFeedScreenState.Posts(postInitialList)
 
-    private val initialState = HomeScreenState.Posts(postInitialList)
-
-    private val _screenState = MutableLiveData<HomeScreenState>(initialState)
-    val screenState: LiveData<HomeScreenState>
+    private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
+    val screenState: LiveData<NewsFeedScreenState>
         get() = _screenState
 
-    private var savedState: HomeScreenState? = initialState
-
-    fun showComments(feedPost: FeedPost) {
-        savedState = _screenState.value
-
-        val currentState = screenState.value
-        if (currentState !is HomeScreenState.Posts) return
-
-        _screenState.value =
-            HomeScreenState.Comments(post = feedPost, comments = postCommentsList)
-    }
+    private var savedState: NewsFeedScreenState? = initialState
 
     fun closeComments() {
         if (savedState != null) _screenState.value = savedState
@@ -59,18 +36,18 @@ class MainViewModel : ViewModel() {
 
     fun removePost(feedPost: FeedPost) {
         val currentState = screenState.value
-        if (currentState !is HomeScreenState.Posts) return
+        if (currentState !is NewsFeedScreenState.Posts) return
 
         val oldFeedPostList = currentState.posts.toMutableList()
 
         val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
         oldFeedPostList.remove(feedPostForDelete)
-        _screenState.value = HomeScreenState.Posts(oldFeedPostList)
+        _screenState.value = NewsFeedScreenState.Posts(oldFeedPostList)
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
         val currentState = screenState.value
-        if (currentState !is HomeScreenState.Posts) return
+        if (currentState !is NewsFeedScreenState.Posts) return
 
         val oldFeedPostList = currentState.posts.toMutableList()
         val oldFeedPostStatistics = feedPost.statistics
@@ -99,6 +76,6 @@ class MainViewModel : ViewModel() {
             }
         }
 
-        _screenState.value = HomeScreenState.Posts(newFeedPosts)
+        _screenState.value = NewsFeedScreenState.Posts(newFeedPosts)
     }
 }
