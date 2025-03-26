@@ -17,4 +17,4 @@ data class FeedPost(
         StatisticItem(type = StatisticType.SHARES, Random.nextInt(100)),
         StatisticItem(type = StatisticType.LIKES, Random.nextInt(300)),
     )
-)
+) 
