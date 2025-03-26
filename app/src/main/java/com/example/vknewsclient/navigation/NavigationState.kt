@@ -2,6 +2,7 @@ package com.example.vknewsclient.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
@@ -14,7 +15,7 @@ class NavigationState(
             launchSingleTop =
                 true // Теперь объекты Вью падают в бэкстэк только уникальные
 
-            popUpTo(navHostController.graph.startDestinationId) {
+            popUpTo(navHostController.graph.findStartDestination().id) { // Установили так, потому что сейчас у нас стартовый экран = граф, а не экран
                 saveState =
                     true // при удалении экранов из бэкстэка их стейт сохраняется
             }

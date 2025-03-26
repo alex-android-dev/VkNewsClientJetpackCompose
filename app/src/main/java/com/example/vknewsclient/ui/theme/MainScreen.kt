@@ -27,7 +27,7 @@ fun MainScreen() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         bottomBar = {
-            VkNavigationBar(navigationState)
+            VkBottomNavigationBar(navigationState)
         },
     ) { paddingValues ->
         AppNavGraph(
