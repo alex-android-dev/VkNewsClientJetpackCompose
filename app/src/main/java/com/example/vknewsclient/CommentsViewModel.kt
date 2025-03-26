@@ -1,0 +1,43 @@
+package com.example.vknewsclient
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.vknewsclient.domain.CommentsScreenState
+import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.PostComment
+import kotlin.random.Random
+
+class CommentsViewModel : ViewModel() {
+
+    private val _screenState = MutableLiveData<CommentsScreenState>(CommentsScreenState.Initial)
+    val screenState: LiveData<CommentsScreenState>
+        get() = _screenState
+
+
+    init {
+        loadComments(FeedPost())
+    }
+
+    fun loadComments(feedPost: FeedPost) {
+        val comments = createFakeCommentsList()
+
+        _screenState.value =
+            CommentsScreenState.Comments(post = feedPost, comments = comments)
+    }
+
+    private fun createFakeCommentsList(): List<PostComment> {
+        return mutableListOf<PostComment>().apply {
+            repeat(Random.nextInt(15)) {
+                add(
+                    PostComment(
+                        id = it,
+                        authorName = "author number $it",
+                    )
+                )
+            }
+        }.toList()
+    }
+
+
+}

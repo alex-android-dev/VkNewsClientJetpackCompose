@@ -23,37 +23,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.vknewsclient.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vknewsclient.NewsFeedViewModel
 import com.example.vknewsclient.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.HomeScreenState
-import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.domain.NewsFeedScreenState
 
 @Composable
-fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
+fun HomeScreen(
+    paddingValues: PaddingValues,
+    onCommentClickListener: (FeedPost) -> Unit,
+) {
 
-    val screenState = viewModel.screenState.observeAsState(HomeScreenState.Initial)
+    val viewModel: NewsFeedViewModel = viewModel()
+    val screenState = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
 
     when (val currentState = screenState.value) {
-        is HomeScreenState.Comments -> {
-            VkCommentsForFeedPosts(
-                postCommentsList = currentState.comments,
-                feedPost = currentState.post,
-                onBackPressed = { viewModel.closeComments() },
-            )
+//        is NewsFeedScreenState.Comments -> {
+//            VkCommentsForFeedPosts(
+//                postCommentsList = currentState.comments,
+//                feedPost = currentState.post,
+//                onBackPressed = { viewModel.closeComments() },
+//            )
+//
+//            BackHandler {
+//                viewModel.closeComments()
+//            } // При нажатии на кнопку назад
+//        }
 
-            BackHandler {
-                viewModel.closeComments()
-            } // При нажатии на кнопку назад
-        }
-
-        is HomeScreenState.Posts -> VkNewsFeedScreen(
+        is NewsFeedScreenState.Posts -> VkNewsFeedScreen(
             posts = currentState.posts,
             viewModel = viewModel,
             paddingValues = paddingValues,
+            onCommentClickListener = { feedPost ->
+                onCommentClickListener(feedPost)
+            }
         )
 
-        is HomeScreenState.Initial -> {}
+        is NewsFeedScreenState.Initial -> {}
     }
 }
 
@@ -61,8 +68,9 @@ fun HomeScreen(viewModel: MainViewModel, paddingValues: PaddingValues) {
 @Composable
 private fun VkNewsFeedScreen(
     posts: List<FeedPost>,
-    viewModel: MainViewModel,
+    viewModel: NewsFeedViewModel,
     paddingValues: PaddingValues,
+    onCommentClickListener: (FeedPost) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -73,15 +81,23 @@ private fun VkNewsFeedScreen(
             VkTopAppBar(VK_TITLE_SCAFFOLD_STR, Icons.Filled.Menu, {})
         },
     ) { paddingValues ->
-        LazyColumnFeedPosts(posts, viewModel, paddingValues)
+        LazyColumnFeedPosts(
+            posts,
+            viewModel,
+            paddingValues,
+            onCommentClickListener = { feedPost ->
+                onCommentClickListener(feedPost)
+            }
+        )
     }
 }
 
 @Composable
 private fun LazyColumnFeedPosts(
     posts: List<FeedPost>,
-    viewModel: MainViewModel,
+    viewModel: NewsFeedViewModel,
     paddingValues: PaddingValues,
+    onCommentClickListener: (FeedPost) -> Unit
 ) {
     val lazyStateList = rememberLazyListState()
 
@@ -134,7 +150,7 @@ private fun LazyColumnFeedPosts(
                         viewModel.updateStatisticCard(feedPost, it)
                     },
                     onCommentClickListener = {
-                        viewModel.showComments(feedPost)
+                        onCommentClickListener(feedPost)
                     },
                 )
             }
