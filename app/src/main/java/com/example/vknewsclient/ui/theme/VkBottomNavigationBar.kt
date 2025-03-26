@@ -22,10 +22,8 @@ fun VkBottomNavigationBar(navigationState: NavigationState) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState() // Хранит текущий открытый экран
-
-        val currentRoute =
-            navBackStackEntry?.destination?.route // Получаем название экрана, который сейчас открыт
+        val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
+        // Хранит текущий открытый экран
 
         items.forEach { item ->
 
@@ -39,7 +37,8 @@ fun VkBottomNavigationBar(navigationState: NavigationState) {
             NavigationBarItem(
                 selected = selected, // Совпадает ли открытый экран с элементом по которому был произведён клик
                 onClick = {
-                    navigationState.navigateTo(item.screen.route)
+                    if (!selected) navigationState.navigateTo(item.screen.route)
+                    // Если элемент не отмеченный и мы кликаем по нему, то будет срабатывать. Иначе не будет срабатывать
                 },
                 icon = { Icon(item.icon, contentDescription = item.icon.name) },
                 label = { Text(stringResource(item.titleResId)) },

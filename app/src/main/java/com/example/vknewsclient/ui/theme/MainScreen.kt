@@ -43,7 +43,10 @@ fun MainScreen() {
             },
             commentsScreenContent = {
                 VkCommentsScreen(
-                    onBackPressed = { commentsToPost.value = null },
+                    onBackPressed = {
+                        navigationState.navHostController.popBackStack()
+                        // Если пользователь кликает на кнопку назад, то закрываем экран
+                    },
                     feedPost = commentsToPost.value!! // TODO временное решение
                 )
             },
