@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
-import com.example.vknewsclient.navigation.Screen
 import com.example.vknewsclient.navigation.rememberNavigationState
 
 
@@ -30,6 +29,7 @@ fun MainScreen() {
             VkBottomNavigationBar(navigationState)
         },
     ) { paddingValues ->
+
         AppNavGraph(
             navHostController = navigationState.navHostController,
             newsFeedScreenContent = {
@@ -37,7 +37,7 @@ fun MainScreen() {
                     paddingValues,
                     onCommentClickListener = { feedPost ->
                         commentsToPost.value = feedPost
-                        navigationState.navigateTo(Screen.Comments.route)
+                        navigationState.navigateToComments()
                     }
                 )
             },

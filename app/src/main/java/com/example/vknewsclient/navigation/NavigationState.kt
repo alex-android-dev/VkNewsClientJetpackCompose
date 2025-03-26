@@ -26,6 +26,10 @@ class NavigationState(
         }
     }
 
+    fun navigateToComments() {
+        navHostController.navigate(Screen.Comments.route)
+    }
+
 }
 
 @Composable
