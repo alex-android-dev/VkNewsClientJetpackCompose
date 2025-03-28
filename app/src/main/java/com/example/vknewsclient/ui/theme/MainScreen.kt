@@ -26,25 +26,29 @@ fun MainScreen() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         bottomBar = {
-            VkNavigationBar(navigationState)
+            VkBottomNavigationBar(navigationState)
         },
     ) { paddingValues ->
+
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
-                if (commentsToPost.value == null) {
-                    HomeScreen(
-                        paddingValues,
-                        onCommentClickListener = {
-                            commentsToPost.value = it
-                        }
-                    )
-                } else {
-                    VkCommentsScreen(
-                        onBackPressed = { commentsToPost.value = null },
-                        feedPost = commentsToPost.value!! // TODO временное решение
-                    )
-                }
+            newsFeedScreenContent = {
+                HomeScreen(
+                    paddingValues,
+                    onCommentClickListener = { feedPost ->
+                        commentsToPost.value = feedPost
+                        navigationState.navigateToComments()
+                    }
+                )
+            },
+            commentsScreenContent = {
+                VkCommentsScreen(
+                    onBackPressed = {
+                        navigationState.navHostController.popBackStack()
+                        // Если пользователь кликает на кнопку назад, то закрываем экран
+                    },
+                    feedPost = commentsToPost.value!! // TODO временное решение
+                )
             },
             favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },
             profileScreen = { TextCounter("profileScreen", paddingValues) },
