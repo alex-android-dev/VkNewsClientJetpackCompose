@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.navigation.Screen
 
 fun NavGraphBuilder.homeScreenNavGraph(
     newsFeedScreenContent: @Composable () -> Unit,
@@ -27,8 +26,9 @@ fun NavGraphBuilder.homeScreenNavGraph(
         }
 
         composable(route = Screen.Comments.route) { navBackStackEntry -> // comments/{feed_post_id}
-            val feedPostId = navBackStackEntry.arguments?.getInt(Screen.KEY_FEED_POST_ID) ?: 0
-            commentsScreenContent(FeedPost(id = feedPostId))
+            val feedPostId =
+                navBackStackEntry.arguments?.getString(Screen.KEY_FEED_POST_ID) ?: ""
+            commentsScreenContent(FeedPost(id = feedPostId.toInt()))
         }
     }
 

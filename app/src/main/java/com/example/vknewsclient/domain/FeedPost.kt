@@ -2,6 +2,7 @@ package com.example.vknewsclient.domain
 
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import com.example.vknewsclient.R
+import java.io.Serializable
 import kotlin.random.Random
 
 data class FeedPost(
@@ -17,4 +18,4 @@ data class FeedPost(
         StatisticItem(type = StatisticType.SHARES, Random.nextInt(100)),
         StatisticItem(type = StatisticType.LIKES, Random.nextInt(300)),
     )
-) 
+)

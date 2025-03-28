@@ -30,7 +30,7 @@ sealed class Screen(
         const val ROUTE_NEWS_FEED = "news_feed"
         const val ROUTE_FAVOURITE = "favourite"
         const val ROUTE_PROFILE = "profile"
-        const val ROUTE_COMMENTS = "comments/$KEY_FEED_POST_ID" // Экран Лента комментариев
+        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST_ID}" // Экран Лента комментариев
         // Включаем сюда ключ feed_post_id, чтобы он принимался composable функцией и мы могли достать айдишку по этому ключу
 
 
