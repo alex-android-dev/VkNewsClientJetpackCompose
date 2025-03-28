@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vknewsclient.domain.FeedPost
 
 class NavigationState(
     val navHostController: NavHostController,
@@ -16,18 +17,16 @@ class NavigationState(
                 true // Теперь объекты Вью падают в бэкстэк только уникальные
 
             popUpTo(navHostController.graph.findStartDestination().id) { // Установили так, потому что сейчас у нас стартовый экран = граф, а не экран
-                saveState =
-                    true // при удалении экранов из бэкстэка их стейт сохраняется
+                saveState = true // при удалении экранов из бэкстэка их стейт сохраняется
             }
             // Удаляет все элементы из бэкстэка до текущего. Текущий экран находится всегда наверху бэкстэка
 
-            restoreState =
-                true // Позволяет восстановить стейт элементов, которые мы сохранили
+            restoreState = true // Позволяет восстановить стейт элементов, которые мы сохранили
         }
     }
 
-    fun navigateToComments() {
-        navHostController.navigate(Screen.Comments.route)
+    fun navigateToComments(feedPost: FeedPost) {
+        navHostController.navigate(Screen.Comments.getRouteWithArgs(feedPost))
     }
 
 }

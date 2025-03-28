@@ -5,11 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.rememberNavigationState
 
@@ -17,9 +13,6 @@ import com.example.vknewsclient.navigation.rememberNavigationState
 @Composable
 fun MainScreen() {
     val navigationState = rememberNavigationState()
-    val commentsToPost: MutableState<FeedPost?> = remember {
-        mutableStateOf(null)
-    }
 
     Scaffold(
         modifier = Modifier
@@ -36,18 +29,17 @@ fun MainScreen() {
                 HomeScreen(
                     paddingValues,
                     onCommentClickListener = { feedPost ->
-                        commentsToPost.value = feedPost
-                        navigationState.navigateToComments()
+                        navigationState.navigateToComments(feedPost)
                     }
                 )
             },
-            commentsScreenContent = {
+            commentsScreenContent = { feedPost ->
                 VkCommentsScreen(
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()
                         // Если пользователь кликает на кнопку назад, то закрываем экран
                     },
-                    feedPost = commentsToPost.value!! // TODO временное решение
+                    feedPost = feedPost
                 )
             },
             favouriteScreen = { TextCounter("favouriteScreen", paddingValues) },

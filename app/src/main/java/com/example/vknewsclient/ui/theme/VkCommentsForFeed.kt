@@ -59,7 +59,11 @@ fun VkCommentsScreen(
                 )
             },
         ) { paddingValues ->
-            LazyColumnCommentsForFeedPost(paddingValues, currentState.comments)
+            LazyColumnCommentsForFeedPost(
+                paddingValues,
+                currentState.comments,
+                currentState.post.contentText
+            )
         }
 
     }
@@ -68,11 +72,11 @@ fun VkCommentsScreen(
 @Composable
 fun LazyColumnCommentsForFeedPost(
     paddingValues: PaddingValues,
-    postCommentsList: List<PostComment>
+    postCommentsList: List<PostComment>,
+    contentText: String,
 ) {
 
     val lazyStateList = rememberLazyListState()
-
 
     LazyColumn(
         modifier = Modifier
@@ -86,6 +90,10 @@ fun LazyColumnCommentsForFeedPost(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         state = lazyStateList,
     ) {
+
+        item {
+            Text(contentText)
+        }
 
         items(
             items = postCommentsList,
