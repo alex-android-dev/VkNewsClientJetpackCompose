@@ -30,7 +30,9 @@ class CommentsViewModel(
 
     private fun createFakeCommentsList(): List<PostComment> {
         return mutableListOf<PostComment>().apply {
-            repeat(Random.nextInt(15)) {
+            repeat(
+                Random.nextInt(10, 30)
+            ) {
                 add(
                     PostComment(
                         id = it,

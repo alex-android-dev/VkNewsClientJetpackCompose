@@ -37,12 +37,26 @@ fun NavGraphBuilder.homeScreenNavGraph(
                         type = NavType.IntType // Указываем, что тип Int
                     }
                 ),
+                navArgument(
+                    name = Screen.KEY_FEED_POST_TEXT,
+                    builder = {
+                        type = NavType.StringType
+                    }
+                ),
             )
-        ) { navBackStackEntry -> // comments/{feed_post_id}
+        ) { navBackStackEntry -> // comments/{feed_post_id}/{feed_post_text}
             val feedPostId =
                 navBackStackEntry.arguments?.getInt(Screen.KEY_FEED_POST_ID) ?: 0
 
-            commentsScreenContent(FeedPost(id = feedPostId))
+            val feedPostString =
+                navBackStackEntry.arguments?.getString(Screen.KEY_FEED_POST_TEXT) ?: ""
+
+            commentsScreenContent(
+                FeedPost(
+                    id = feedPostId,
+                    contentText = feedPostString
+                )
+            )
         }
     }
 

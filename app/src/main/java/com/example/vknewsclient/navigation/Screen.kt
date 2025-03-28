@@ -20,17 +20,18 @@ sealed class Screen(
         private const val ROUTE_COMMENTS_FOR_ARGS = "comments"
 
         fun getRouteWithArgs(feedPost: FeedPost) =
-            "${ROUTE_COMMENTS_FOR_ARGS}/${feedPost.id}"
+            "${ROUTE_COMMENTS_FOR_ARGS}/${feedPost.id}/${feedPost.contentText}"
 
     }
 
     companion object {
         const val KEY_FEED_POST_ID = "feed_post_id"
+        const val KEY_FEED_POST_TEXT = "feed_post_text"
 
         const val ROUTE_NEWS_FEED = "news_feed"
         const val ROUTE_FAVOURITE = "favourite"
         const val ROUTE_PROFILE = "profile"
-        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST_ID}" // Экран Лента комментариев
+        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST_ID}/{$KEY_FEED_POST_TEXT}" // Экран Лента комментариев
         // Включаем сюда ключ feed_post_id, чтобы он принимался composable функцией и мы могли достать айдишку по этому ключу
 
 
