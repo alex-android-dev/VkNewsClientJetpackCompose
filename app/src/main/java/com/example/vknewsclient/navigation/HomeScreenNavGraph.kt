@@ -35,7 +35,7 @@ fun NavGraphBuilder.homeScreenNavGraph(
                 navArgument( // Добавление аргумента в коллекцию
                     name = Screen.KEY_FEED_POST, // ключ для аргумента
                     builder = { // билдер аргумента
-                        type = NavType.StringType // Указываем, что тип Int
+                        type = NavType.StringType // Указываем, что тип String
                     }
                 ),
             )
