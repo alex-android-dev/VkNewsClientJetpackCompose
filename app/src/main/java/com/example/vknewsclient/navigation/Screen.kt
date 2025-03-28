@@ -1,5 +1,6 @@
 package com.example.vknewsclient.navigation
 
+import android.net.Uri
 import com.example.vknewsclient.domain.FeedPost
 
 // Класс, где хранятся все экраны
@@ -19,8 +20,16 @@ sealed class Screen(
 
         private const val ROUTE_COMMENTS_FOR_ARGS = "comments"
 
-        fun getRouteWithArgs(feedPost: FeedPost) =
-            "${ROUTE_COMMENTS_FOR_ARGS}/${feedPost.id}/${feedPost.contentText}"
+        fun getRouteWithArgs(feedPost: FeedPost): String {
+            val feedPostId = feedPost.id
+
+            val feedPostText = feedPost.contentText.encode()
+            // Экранирование текста (в случае если текст приходит с такой чертой "/"
+            // Вызываем каждый раз в случае если передаём строку в качестве параметра
+
+            val result = "${ROUTE_COMMENTS_FOR_ARGS}/$feedPostId/$feedPostText"
+            return result
+        }
 
     }
 
@@ -31,7 +40,8 @@ sealed class Screen(
         const val ROUTE_NEWS_FEED = "news_feed"
         const val ROUTE_FAVOURITE = "favourite"
         const val ROUTE_PROFILE = "profile"
-        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST_ID}/{$KEY_FEED_POST_TEXT}" // Экран Лента комментариев
+        const val ROUTE_COMMENTS =
+            "comments/{$KEY_FEED_POST_ID}/{$KEY_FEED_POST_TEXT}" // Экран Лента комментариев
         // Включаем сюда ключ feed_post_id, чтобы он принимался composable функцией и мы могли достать айдишку по этому ключу
 
 
@@ -39,3 +49,5 @@ sealed class Screen(
     }
 
 }
+
+fun String.encode(): String = Uri.encode(this)
