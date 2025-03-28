@@ -10,6 +10,8 @@ activityCompose = "1.10.1"
 composeBom = "2025.03.00"
 composeLivedata = "1.7.8"
 navigation_version = "2.8.9"
+gson_version="2.11.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +30,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeLivedata" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation_version" }
+gson = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref ="gson_version"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

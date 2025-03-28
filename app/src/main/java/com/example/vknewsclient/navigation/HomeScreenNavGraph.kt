@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.vknewsclient.domain.FeedPost
+import com.google.gson.Gson
 
 fun NavGraphBuilder.homeScreenNavGraph(
     newsFeedScreenContent: @Composable () -> Unit,
@@ -32,31 +33,17 @@ fun NavGraphBuilder.homeScreenNavGraph(
             arguments = listOf(
                 // Позволяет передавать разные аргументы
                 navArgument( // Добавление аргумента в коллекцию
-                    name = Screen.KEY_FEED_POST_ID, // ключ для аргумента
+                    name = Screen.KEY_FEED_POST, // ключ для аргумента
                     builder = { // билдер аргумента
-                        type = NavType.IntType // Указываем, что тип Int
-                    }
-                ),
-                navArgument(
-                    name = Screen.KEY_FEED_POST_TEXT,
-                    builder = {
-                        type = NavType.StringType
+                        type = NavType.StringType // Указываем, что тип Int
                     }
                 ),
             )
-        ) { navBackStackEntry -> // comments/{feed_post_id}/{feed_post_text}
-            val feedPostId =
-                navBackStackEntry.arguments?.getInt(Screen.KEY_FEED_POST_ID) ?: 0
-
-            val feedPostString =
-                navBackStackEntry.arguments?.getString(Screen.KEY_FEED_POST_TEXT) ?: ""
-
-            commentsScreenContent(
-                FeedPost(
-                    id = feedPostId,
-                    contentText = feedPostString
-                )
-            )
+        ) { navBackStackEntry -> // comments/{feed_post} JSON format
+            val feedPostJson =
+                navBackStackEntry.arguments?.getString(Screen.KEY_FEED_POST) ?: ""
+            val feedPost = Gson().fromJson(feedPostJson, FeedPost::class.java)
+            commentsScreenContent(feedPost)
         }
     }
 
