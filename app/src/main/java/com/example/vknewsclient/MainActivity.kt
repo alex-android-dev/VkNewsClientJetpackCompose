@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.vknewsclient.ui.theme.MainScreen
+import com.example.vknewsclient.ui.theme.MyNumber
+import com.example.vknewsclient.ui.theme.SideEffectTest
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAuthenticationResult
