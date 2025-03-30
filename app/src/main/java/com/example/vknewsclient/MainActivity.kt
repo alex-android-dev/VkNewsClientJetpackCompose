@@ -6,7 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.example.vknewsclient.ui.theme.MainScreen
 import com.example.vknewsclient.ui.theme.MyNumber
 import com.example.vknewsclient.ui.theme.SideEffectTest
@@ -26,29 +33,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            VkNewsClientTheme() {
+                val vkScopeObjects = listOf(VKScope.WALL, VKScope.PHOTOS)
 
-            val vkScopeObjects = listOf(VKScope.WALL, VKScope.PHOTOS)
+                val launcher = rememberLauncherForActivityResult(
+                    contract = VK.getVKAuthActivityResultContract(), // Передаем сюда контракт от ВК
+                    onResult = { result ->
+                        when (result) {
+                            is VKAuthenticationResult.Success -> {
+                                log("Success auth")
+                            }
 
-
-            val launcher = rememberLauncherForActivityResult(
-                contract = VK.getVKAuthActivityResultContract(), // Передаем сюда контракт от ВК
-                onResult = { result ->
-                    when (result) {
-                        is VKAuthenticationResult.Success -> {
-                            log("Success auth")
-                        }
-
-                        is VKAuthenticationResult.Failed -> {
-                            log("Failed auth")
+                            is VKAuthenticationResult.Failed -> {
+                                log("Failed auth")
+                            }
                         }
                     }
-                }
-            )
-            SideEffect {
-                launcher.launch(vkScopeObjects)
-            }
+                )
 
-            VkNewsClientTheme() {
+                SideEffect {
+                    log("SideEffect")
+                    launcher.launch(vkScopeObjects)
+                }
+
                 MainScreen()
             }
         }
