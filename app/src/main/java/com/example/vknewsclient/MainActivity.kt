@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.SideEffect
 import com.example.vknewsclient.ui.theme.MainScreen
 import com.example.vknewsclient.ui.theme.MyNumber
 import com.example.vknewsclient.ui.theme.SideEffectTest
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
             val vkScopeObjects = listOf(VKScope.WALL, VKScope.PHOTOS)
 
+
             val launcher = rememberLauncherForActivityResult(
                 contract = VK.getVKAuthActivityResultContract(), // Передаем сюда контракт от ВК
                 onResult = { result ->
@@ -42,8 +44,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
-
-            launcher.launch(vkScopeObjects)
+            SideEffect {
+                launcher.launch(vkScopeObjects)
+            }
 
             VkNewsClientTheme() {
                 MainScreen()
