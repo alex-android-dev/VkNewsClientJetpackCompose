@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.vk.core)
+    implementation(libs.vk.api)
     implementation(libs.coil)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)

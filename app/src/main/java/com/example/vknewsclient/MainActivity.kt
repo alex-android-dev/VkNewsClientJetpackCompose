@@ -1,12 +1,26 @@
 package com.example.vknewsclient
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.vknewsclient.ui.theme.ActivityResultTest
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.example.vknewsclient.ui.theme.MainScreen
+import com.example.vknewsclient.ui.theme.MyNumber
+import com.example.vknewsclient.ui.theme.SideEffectTest
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
+import com.vk.api.sdk.VK
+import com.vk.api.sdk.auth.VKAuthenticationResult
+import com.vk.api.sdk.auth.VKScope
 
 const val VK_TITLE_SCAFFOLD_STR = "VK Clone"
 
@@ -20,9 +34,34 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VkNewsClientTheme() {
-//                MainScreen()
-                ActivityResultTest()
+                val vkScopeObjects = listOf(VKScope.WALL, VKScope.PHOTOS)
+
+                val launcher = rememberLauncherForActivityResult(
+                    contract = VK.getVKAuthActivityResultContract(), // Передаем сюда контракт от ВК
+                    onResult = { result ->
+                        when (result) {
+                            is VKAuthenticationResult.Success -> {
+                                log("Success auth")
+                            }
+
+                            is VKAuthenticationResult.Failed -> {
+                                log("Failed auth")
+                            }
+                        }
+                    }
+                )
+
+                SideEffect {
+                    log("SideEffect")
+                    launcher.launch(vkScopeObjects)
+                }
+
+                MainScreen()
             }
         }
+    }
+
+    companion object {
+        private fun log(str: String) = Log.d("MainActivity", str)
     }
 }
