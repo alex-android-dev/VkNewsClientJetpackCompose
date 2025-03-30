@@ -24,5 +24,9 @@
         Профиль
     </string>
 
+    <integer name="com_vk_sdk_AppId">
+        53293271
+    </integer>
+
 
 </resources>
