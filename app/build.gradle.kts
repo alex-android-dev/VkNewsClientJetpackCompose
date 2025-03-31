@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
+    id("vkid.manifest.placeholders")
 }
 
 android {
@@ -32,6 +33,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -42,8 +44,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.vk.core)
-    implementation(libs.vk.api)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    val sdkVersion = "2.3.1"
+    implementation("com.vk.id:vkid:${sdkVersion}")
+    implementation(libs.vk.core) // todo убрать
+    implementation(libs.vk.api) // todo убрать
     implementation(libs.coil)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
@@ -63,4 +68,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
