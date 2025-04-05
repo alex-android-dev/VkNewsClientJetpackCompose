@@ -24,10 +24,6 @@ class MainViewModel() : ViewModel() {
         }
     }
 
-    fun saveToken(context: Context, token: AccessToken) {
-        saveToken(context, token.token)
-    }
-
     fun performAuthResult(state: AuthState) {
         _authState.value = state
     }
@@ -54,12 +50,6 @@ class MainViewModel() : ViewModel() {
             else -> Log.d("LoginScreen", "Another Error")
         }
 
-    }
-
-    private fun saveToken(context: Context, token: String) {
-        val sharedPreferences =
-            context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
-        sharedPreferences.edit() { putString("user_token", token) }
     }
 }
 

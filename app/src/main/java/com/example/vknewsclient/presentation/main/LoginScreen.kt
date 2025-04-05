@@ -47,7 +47,6 @@ fun LoginScreen(
                     Log.d("LoginScreen", "token: ${token.token}")
                     // TODO UI слой не должен знать об domain слое. Нужно подумать как переделать
                     viewModel.performAuthResult(AuthState.Authorized)
-                    viewModel.saveToken(context, token)
                 },
                 onFail = { oAuth, fail ->
                     // TODO UI слой не должен знать об domain слое. Нужно подумать как переделать
