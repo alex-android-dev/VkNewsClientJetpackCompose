@@ -47,8 +47,10 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     val sdkVersion = "2.3.1"
     implementation("com.vk.id:vkid:${sdkVersion}")
-    implementation(libs.vk.core) // todo убрать
-    implementation(libs.vk.api) // todo убрать
+    implementation("com.vk.id:onetap-compose:$sdkVersion")
+    implementation("com.vk.id:vk-sdk-support:${sdkVersion}")
+
+
     implementation(libs.coil)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)

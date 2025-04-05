@@ -38,17 +38,6 @@ fun HomeScreen(
     val screenState = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
 
     when (val currentState = screenState.value) {
-//        is NewsFeedScreenState.Comments -> {
-//            VkCommentsForFeedPosts(
-//                postCommentsList = currentState.comments,
-//                feedPost = currentState.post,
-//                onBackPressed = { viewModel.closeComments() },
-//            )
-//
-//            BackHandler {
-//                viewModel.closeComments()
-//            } // При нажатии на кнопку назад
-//        }
 
         is NewsFeedScreenState.Posts -> VkNewsFeedScreen(
             posts = currentState.posts,
