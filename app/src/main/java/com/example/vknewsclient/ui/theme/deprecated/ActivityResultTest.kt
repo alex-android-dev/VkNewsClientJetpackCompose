@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.ui.theme.deprecated
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import java.nio.file.WatchEvent
 
 @Composable
 fun ActivityResultTest() {

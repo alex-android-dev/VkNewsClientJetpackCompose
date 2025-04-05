@@ -37,7 +37,6 @@ coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil_
 vk-core = { group = "com.vk", name = "android-sdk-core", version.ref = "vk_version" }
 vk-api = { group = "com.vk", name = "android-sdk-api", version.ref = "vk_version" }
 
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.ui.theme.deprecated
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
