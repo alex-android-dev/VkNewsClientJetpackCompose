@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme.deprecated
+package com.example.vknewsclient.presentation.samples
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

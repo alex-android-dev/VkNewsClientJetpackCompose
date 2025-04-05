@@ -1,4 +1,6 @@
-package com.example.vknewsclient.domain
+package com.example.vknewsclient.presentation.news
+
+import com.example.vknewsclient.domain.FeedPost
 
 sealed class NewsFeedScreenState {
     object Initial : NewsFeedScreenState()

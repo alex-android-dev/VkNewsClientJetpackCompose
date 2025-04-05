@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.news
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -23,13 +23,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vknewsclient.NewsFeedViewModel
-import com.example.vknewsclient.VK_TITLE_SCAFFOLD_STR
+import com.example.vknewsclient.presentation.main.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedScreenState
+import com.example.vknewsclient.presentation.main.VkTopAppBar
 
 @Composable
-fun HomeScreen(
+fun NewsFeedScreen(
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit,
 ) {
