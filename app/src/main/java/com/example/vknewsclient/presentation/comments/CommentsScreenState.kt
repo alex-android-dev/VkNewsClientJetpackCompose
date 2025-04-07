@@ -1,4 +1,7 @@
-package com.example.vknewsclient.domain
+package com.example.vknewsclient.presentation.comments
+
+import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.PostComment
 
 sealed class CommentsScreenState {
     object Initial : CommentsScreenState()

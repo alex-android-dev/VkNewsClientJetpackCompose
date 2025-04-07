@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme.deprecated
+package com.example.vknewsclient.presentation.samples
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

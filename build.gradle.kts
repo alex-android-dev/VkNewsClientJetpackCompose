@@ -12,7 +12,7 @@ vkidManifestPlaceholders {
     // Добавьте плейсхолдеры сокращенным способом. Например, vkidRedirectHost будет "vk.com", а vkidRedirectScheme будет "vk$clientId".
     // Или укажите значения явно через properties, если не хотите использовать плейсхолдеры.
     vkidRedirectHost = "vk.com" // Обычно vk.com.
-    vkidRedirectScheme = "vk53293271" // Строго в формате vk{ID приложения}.
-    vkidClientId = "53293271"
-    vkidClientSecret = "TQmgUQs04fwM6vuaKwk8"
+    vkidRedirectScheme = "vk53393600" // Строго в формате vk{ID приложения}.
+    vkidClientId = "53393600"
+    vkidClientSecret = "N1Tipr6E4fbulUNKenGp"
 }

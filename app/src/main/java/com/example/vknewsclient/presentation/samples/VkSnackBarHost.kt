@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme.deprecated
+package com.example.vknewsclient.presentation.samples
 
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState

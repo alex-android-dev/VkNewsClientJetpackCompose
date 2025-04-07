@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.comments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vknewsclient.CommentsViewModel
-import com.example.vknewsclient.CommentsViewModelFactory
-import com.example.vknewsclient.domain.CommentsScreenState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
+import com.example.vknewsclient.presentation.main.VkTopAppBar
 
 const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 

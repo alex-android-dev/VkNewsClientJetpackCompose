@@ -1,10 +1,9 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.news
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedScreenState
 import com.example.vknewsclient.domain.StatisticItem
 import kotlin.random.Random
 
@@ -12,7 +11,7 @@ class NewsFeedViewModel : ViewModel() {
 
     private val postInitialList by lazy {
         mutableListOf<FeedPost>().apply {
-            repeat(Random.nextInt(10, 20)) {
+            repeat(Random.Default.nextInt(10, 20)) {
                 val feedPost = FeedPost(id = it)
                 add(
                     feedPost

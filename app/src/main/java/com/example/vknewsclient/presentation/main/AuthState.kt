@@ -1,6 +1,4 @@
-package com.example.vknewsclient.ui.theme
-
-import com.vk.id.VKIDAuthFail
+package com.example.vknewsclient.presentation.main
 
 sealed class AuthState {
 

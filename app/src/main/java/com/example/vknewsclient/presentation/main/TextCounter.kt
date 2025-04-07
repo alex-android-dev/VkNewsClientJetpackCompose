@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues

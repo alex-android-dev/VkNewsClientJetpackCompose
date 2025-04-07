@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,11 +7,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.VkBottomNavigationBar
 import com.example.vknewsclient.navigation.rememberNavigationState
+import com.example.vknewsclient.presentation.comments.VkCommentsScreen
+import com.example.vknewsclient.presentation.news.NewsFeedScreen
 
 
 @Composable
-fun MainScreen() {
+fun VkNewsMainScreen() {
     val navigationState = rememberNavigationState()
 
     Scaffold(
@@ -26,7 +29,7 @@ fun MainScreen() {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             newsFeedScreenContent = {
-                HomeScreen(
+                NewsFeedScreen(
                     paddingValues,
                     onCommentClickListener = { feedPost ->
                         navigationState.navigateToComments(feedPost)

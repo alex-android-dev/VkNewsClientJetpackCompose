@@ -1,9 +1,8 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.comments
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.vknewsclient.domain.CommentsScreenState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import kotlin.random.Random
