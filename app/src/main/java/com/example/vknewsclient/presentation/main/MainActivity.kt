@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
                     is AuthState.NonAuthorized -> LoginScreen(this, viewModel)
                     else -> {}
                 }
-
             }
         }
     }

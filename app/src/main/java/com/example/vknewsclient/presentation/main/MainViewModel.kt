@@ -1,11 +1,8 @@
 package com.example.vknewsclient.presentation.main
 
-import android.content.Context
 import android.util.Log
-import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
 
