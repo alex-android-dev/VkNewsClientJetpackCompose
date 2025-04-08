@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-private const val baseUrl = "https://<api.vk.ru>/method/"
+private const val baseUrl = "https://api.vk.ru/method/"
 
 object ApiFactory {
 
