@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R
+import com.vk.id.auth.VKIDAuthUiParams
 import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
@@ -53,22 +54,12 @@ fun LoginScreen(
                     viewModel.performAuthResult(AuthState.NonAuthorized)
                     viewModel.setFail(fail)
                 },
+                authParams = VKIDAuthUiParams {
+                    scopes = setOf("wall", "email", "phone_number", "friends")
+                },
                 scenario = OneTapTitleScenario.SignUp,
                 signInAnotherAccountButtonEnabled = true,
             )
-
-
-//            Button(
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = DarkBlue,
-//                    contentColor = Color.White
-//                ),
-//                onClick = { onLoginClick() }
-//            ) {
-//                Text(
-//                    text = stringResource(R.string.button_login)
-//                )
-//            }
         }
     }
 }
