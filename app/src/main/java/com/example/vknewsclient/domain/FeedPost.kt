@@ -1,44 +1,22 @@
 package com.example.vknewsclient.domain
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.navigation.NavType
-import com.example.vknewsclient.R
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
-import kotlin.random.Random
 
 @Parcelize
 data class FeedPost(
-    val id: Int = -1,
-    val communityName: String = getRandomCommunityName(),
-    val publicationDate: String = getRandomPublicationData(),
-    val avatarResId: Int = R.drawable.community_avatar,
-    var contentText: String = getRandomContentText(),
-    val contentImageResId: Int = R.drawable.post_image_example,
-    val statistics: List<StatisticItem> = getRandomStatistics(),
+    val id: String,
+    val communityName: String,
+    val publicationDate: String,
+    val communityImageUrl: String,
+    var contentText: String,
+    val contentImageUrl: String?,
+    val statistics: List<StatisticItem>,
 ) : Parcelable {
     companion object {
-        private fun getRandomCommunityName() =
-            LoremIpsum(Random.nextInt(5, 10)).values.joinToString()
-
-        @SuppressLint("DefaultLocale")
-        private fun getRandomPublicationData() =
-            String.format("%02d:%02d", Random.nextInt(24), Random.nextInt(59))
-
-        private fun getRandomContentText() =
-            LoremIpsum(Random.nextInt(10, 20)).values.joinToString()
-
-        private fun getRandomStatistics() =
-            listOf(
-                StatisticItem(type = StatisticType.VIEWS, Random.nextInt(500)),
-                StatisticItem(type = StatisticType.COMMENTS, Random.nextInt(50)),
-                StatisticItem(type = StatisticType.SHARES, Random.nextInt(100)),
-                StatisticItem(type = StatisticType.LIKES, Random.nextInt(300)),
-            )
-
         // Переопределяем класс NavigationType
         val NavigationType: NavType<FeedPost> = object : NavType<FeedPost>(false) {
             // При помощи анонимного класса мы наследуемся от NavType и переопределяем необходимые методы

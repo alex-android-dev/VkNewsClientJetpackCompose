@@ -178,7 +178,7 @@ private fun PostBody(feedPost: FeedPost) {
         Image(
             modifier = Modifier
                 .fillMaxWidth(),
-            painter = painterResource(feedPost.contentImageResId),
+            painter = painterResource(feedPost.contentImageUrl),
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
@@ -199,7 +199,7 @@ private fun PostHeader(feedPost: FeedPost) {
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(feedPost.avatarResId),
+            painter = painterResource(feedPost.communityImageUrl),
             contentDescription = null,
         )
 
