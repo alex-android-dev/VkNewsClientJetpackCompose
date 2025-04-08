@@ -3,28 +3,39 @@ package com.example.vknewsclient.presentation.news
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.vknewsclient.data.mapper.NewsFeedMapper
+import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
+import com.vk.id.VKID
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class NewsFeedViewModel : ViewModel() {
 
-    private val postInitialList by lazy {
-        mutableListOf<FeedPost>().apply {
-            repeat(Random.Default.nextInt(10, 20)) {
-                val feedPost = FeedPost(id = it)
-                add(
-                    feedPost
-                )
-            }
-        }
-    }
-
-    private val initialState = NewsFeedScreenState.Posts(postInitialList)
+    private val initialState = NewsFeedScreenState.Initial
+    private val mapper = NewsFeedMapper() // TODO в будущем будем инжектить
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
     val screenState: LiveData<NewsFeedScreenState>
         get() = _screenState
+
+    init {
+        loadRecommendations()
+    }
+
+    private fun loadRecommendations() {
+
+        viewModelScope.launch {
+            val token =
+                VKID.Companion.instance.accessToken?.token ?: return@launch // Выходим из корутины
+            val response = ApiFactory.apiService.loadRecommendations(token)
+            val feedPost = mapper.mapResponseToPosts(response)
+            _screenState.value = NewsFeedScreenState.Posts(feedPost)
+        }
+
+    }
 
     fun removePost(feedPost: FeedPost) {
         val currentState = screenState.value

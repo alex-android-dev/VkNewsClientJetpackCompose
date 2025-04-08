@@ -20,9 +20,7 @@ class MainViewModel() : ViewModel() {
     val authState = _authState
 
     init {
-        var token : String? = null
-
-        token = VKID.Companion.instance.accessToken?.token
+        val token = VKID.Companion.instance.accessToken?.token
         Log.d("MainViewModel", "token: ${VKID.Companion.instance.accessToken?.token}")
 
         viewModelScope.launch {
