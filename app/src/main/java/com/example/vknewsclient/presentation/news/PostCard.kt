@@ -1,6 +1,5 @@
 package com.example.vknewsclient.presentation.news
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -233,24 +232,3 @@ private fun PostHeader(feedPost: FeedPost) {
 
 
 }
-
-//@Preview
-//@Composable
-//private fun PreviewPostCardLight() {
-//    VkNewsClientTheme(
-//        darkTheme = false
-//    ) {
-//        PostCard(feedPost = FeedPost())
-//    }
-//}
-//
-//
-//@Preview
-//@Composable
-//private fun PreviewPostCardDark() {
-//    VkNewsClientTheme(
-//        darkTheme = true
-//    ) {
-//        PostCard(feedPost = FeedPost())
-//    }
-//}
