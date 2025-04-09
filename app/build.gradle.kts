@@ -44,13 +44,15 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-    val sdkVersion = "2.3.1"
-    implementation("com.vk.id:vkid:${sdkVersion}")
-    implementation("com.vk.id:onetap-compose:$sdkVersion")
-    implementation("com.vk.id:vk-sdk-support:${sdkVersion}")
-
-
+    implementation(libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.coil.compose.v310)
+    implementation(libs.coil.network.okhttp)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.vkid)
+    implementation(libs.onetap.compose)
+    implementation(libs.vk.sdk.support)
     implementation(libs.coil)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
