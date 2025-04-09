@@ -1,12 +1,10 @@
 package com.example.vknewsclient.data.mapper
 
-import androidx.compose.material3.DatePicker
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import java.sql.Date
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.absoluteValue
@@ -39,7 +37,7 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.VIEWS, count = post.views.count),
                     StatisticItem(type = StatisticType.SHARES, count = post.reposts.count)
                 ),
-                isFavorite = post.isFavorite
+                isLiked = post.likes.userLikes > 0
             )
 
             result.add(feedPost)

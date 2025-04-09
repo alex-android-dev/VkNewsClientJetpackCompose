@@ -11,12 +11,10 @@ import kotlinx.coroutines.launch
 
 class NewsFeedViewModel : ViewModel() {
 
-    private val initialState = NewsFeedScreenState.Initial
-
     //    private val mapper = NewsFeedMapper() // TODO в будущем будем инжектить
     private val repository = NewsFeedRepository()
 
-    private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
+    private val _screenState = MutableLiveData<NewsFeedScreenState>(NewsFeedScreenState.Initial)
     val screenState: LiveData<NewsFeedScreenState>
         get() = _screenState
 
@@ -36,7 +34,13 @@ class NewsFeedViewModel : ViewModel() {
 
     fun changeLikeStatus(feedPost: FeedPost) {
         viewModelScope.launch {
-            repository.addLike(feedPost)
+            if (feedPost.isLiked) {
+                repository.deleteLike(feedPost)
+            } else {
+                repository.addLike(feedPost)
+            }
+
+            _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
     }
 

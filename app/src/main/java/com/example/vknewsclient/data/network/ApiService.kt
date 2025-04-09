@@ -1,5 +1,6 @@
 package com.example.vknewsclient.data.network
 
+import com.example.vknewsclient.data.model.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -19,7 +20,14 @@ interface ApiService {
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    )
+    ) : LikesCountResponse
+
+    @GET("likes.delete?$APP_API_VERSION&type=post")
+    suspend fun deleteLike(
+        @Query("access_token") token: String,
+        @Query("owner_id") ownerId: Long,
+        @Query("item_id") postId: Long,
+    ) : LikesCountResponse
 
 
 }
