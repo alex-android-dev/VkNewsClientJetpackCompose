@@ -4,9 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 // Чтобы мы из JSON вытащили нужные нам столбцы
 data class PostDto(
-    @SerializedName("id") val id: String,
-    @SerializedName("source_id") val communityId : Long,
-    @SerializedName("isFavorite") val isFavorite: Boolean,
+    @SerializedName("id") val id: Long,
+    @SerializedName("source_id") val communityId: Long,
     @SerializedName("text") val text: String,
     @SerializedName("date") val date: Long,
     @SerializedName("likes") val likes: LikesDto,

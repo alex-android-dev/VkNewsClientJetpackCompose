@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
@@ -33,6 +34,11 @@ class MainViewModel() : ViewModel() {
         } else {
             _authState.value = AuthState.NonAuthorized
         }
+
+//        viewModelScope.launch {
+//            repository.refreshToken()
+//        } // TODO доделать
+
     }
 
     fun performAuthResult(state: AuthState) {
