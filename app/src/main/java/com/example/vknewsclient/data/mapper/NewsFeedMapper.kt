@@ -37,7 +37,8 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.COMMENTS, count = post.comments.count),
                     StatisticItem(type = StatisticType.VIEWS, count = post.views.count),
                     StatisticItem(type = StatisticType.SHARES, count = post.reposts.count)
-                )
+                ),
+                isFavorite = post.isFavorite
             )
 
             result.add(feedPost)
