@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-private const val baseUrl = "https://api.vk.ru/method/"
+private const val BASE_URL = "https://api.vk.ru/method/"
 
 object ApiFactory {
 
@@ -21,7 +21,7 @@ object ApiFactory {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
+        .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()

@@ -127,8 +127,8 @@ private fun LazyColumnFeedPosts(
             ) {
                 PostCard(
                     feedPost,
-                    onLikeClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
+                    onLikeClickListener = { _ ->
+                        viewModel.changeLikeStatus(feedPost)
                     },
                     onShareClickListener = {
                         viewModel.updateStatisticCard(feedPost, it)

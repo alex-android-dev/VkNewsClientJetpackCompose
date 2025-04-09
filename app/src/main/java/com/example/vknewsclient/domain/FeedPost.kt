@@ -10,7 +10,8 @@ import kotlin.random.Random
 
 @Parcelize
 data class FeedPost(
-    val id: String,
+    val id: Long,
+    val communityId: Long,
     val communityName: String,
     val publicationDate: String,
     val communityImageUrl: String,
