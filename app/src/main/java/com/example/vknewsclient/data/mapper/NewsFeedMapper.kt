@@ -48,11 +48,8 @@ class NewsFeedMapper {
     }
 
     private fun mapTimestampToDate(timestamp: Long): String {
-
-
         val date = Date(timestamp)
         return SimpleDateFormat("d MMMM yyyy, hh:mm", Locale.getDefault()).format(date)
-
     }
 
 }

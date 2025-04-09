@@ -87,7 +87,7 @@ private fun Statistics(
             val viewsItem = statisticItemList.getItemByType(StatisticType.VIEWS)
 
             IconWithText(
-                text = viewsItem.count.toString(),
+                text = formatStatisticCount(viewsItem.count),
                 icon = drawable.ic_views,
                 onItemClickListener = {
                     onViewsClickListener(viewsItem)
@@ -102,21 +102,24 @@ private fun Statistics(
 
             val sharesItem = statisticItemList.getItemByType(StatisticType.SHARES)
             IconWithText(
-                sharesItem.count.toString(), drawable.ic_share,
+                text = formatStatisticCount(sharesItem.count),
+                icon = drawable.ic_share,
                 onItemClickListener = {
                     onShareClickListener(sharesItem)
                 })
 
             val commentsItem = statisticItemList.getItemByType(StatisticType.COMMENTS)
             IconWithText(
-                commentsItem.count.toString(), drawable.ic_comment,
+                text = formatStatisticCount(commentsItem.count),
+                icon = drawable.ic_comment,
                 onItemClickListener = {
                     onCommentClickListener(commentsItem)
                 })
 
             val likesItem = statisticItemList.getItemByType(StatisticType.LIKES)
             IconWithText(
-                likesItem.count.toString(), drawable.ic_like,
+                text = formatStatisticCount(likesItem.count),
+                icon = drawable.ic_like,
                 onItemClickListener = {
                     onLikeClickListener(likesItem)
                 })
@@ -124,6 +127,16 @@ private fun Statistics(
 
         }
 
+    }
+}
+
+private fun formatStatisticCount(count: Int): String {
+    return if (count > 100_000) {
+        String.format("%sK", count / 1_000)
+    } else if (count > 1000) {
+        String.format("%.1fK", (count / 1_000f))
+    } else {
+        count.toString()
     }
 }
 
