@@ -1,9 +1,14 @@
 package com.example.vknewsclient.data.mapper
 
+import androidx.compose.material3.DatePicker
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
+import java.sql.Date
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.absoluteValue
 
 class NewsFeedMapper {
@@ -23,7 +28,7 @@ class NewsFeedMapper {
             val feedPost = FeedPost(
                 id = post.id,
                 communityName = group.name,
-                publicationDate = post.date.toString(),
+                publicationDate = mapTimestampToDate(post.date * 1000),
                 communityImageUrl = group.imageUrl,
                 contentText = post.text,
                 contentImageUrl = post.posts?.firstOrNull()?.photo?.photoUrls?.lastOrNull()?.url,
@@ -40,6 +45,14 @@ class NewsFeedMapper {
         }
 
         return result
+    }
+
+    private fun mapTimestampToDate(timestamp: Long): String {
+
+
+        val date = Date(timestamp)
+        return SimpleDateFormat("d MMMM yyyy, hh:mm", Locale.getDefault()).format(date)
+
     }
 
 }
