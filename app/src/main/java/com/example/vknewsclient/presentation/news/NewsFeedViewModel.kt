@@ -10,8 +10,6 @@ import com.example.vknewsclient.domain.StatisticItem
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel : ViewModel() {
-
-    //    private val mapper = NewsFeedMapper() // TODO в будущем будем инжектить
     private val repository = NewsFeedRepository()
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(NewsFeedScreenState.Initial)
@@ -55,14 +53,10 @@ class NewsFeedViewModel : ViewModel() {
         if (currentState !is NewsFeedScreenState.Posts) return
 
         viewModelScope.launch {
-            repository.removeItem(feedPost)
+            repository.removePost(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
 
-        val feedPostList = currentState.posts.toMutableList()
-
-        val feedPostForDelete = feedPostList.find { it.id == feedPost.id }
-        feedPostList.remove(feedPostForDelete)
-        _screenState.value = NewsFeedScreenState.Posts(feedPostList)
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {

@@ -42,7 +42,7 @@ class NewsFeedRepository {
         return feedPosts
     }
 
-    suspend fun removeItem(feedPost: FeedPost) {
+    suspend fun removePost(feedPost: FeedPost) {
         val ownerId = -(feedPost.communityId)
         val postId = feedPost.id
 
@@ -51,6 +51,9 @@ class NewsFeedRepository {
             ownerId = ownerId,
             postId = postId,
         )
+
+        val feedPostItem = _feedPosts.find { it.id == feedPost.id }
+        _feedPosts.remove(feedPostItem)
 
     }
 

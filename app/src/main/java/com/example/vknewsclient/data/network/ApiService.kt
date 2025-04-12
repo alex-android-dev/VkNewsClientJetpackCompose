@@ -29,7 +29,7 @@ interface ApiService {
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    ): NewsFeedResponseDto
+    )
 
 
     @GET("likes.add?$APP_API_VERSION&$STR_TYPE=$TYPE_POST")
