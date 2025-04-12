@@ -56,15 +56,17 @@ class Mapper {
         val profiles = responseDto.commentsContent.profiles
 
         comments.forEach { comment ->
+            if (comment.commentText.isBlank()) return@forEach
+
             val profile = profiles.find { comment.fromProfileId == it.id } ?: return@forEach
-            val authorName = profile.firstName + profile.lastName
+            val authorName = "${profile.firstName} ${profile.lastName}"
 
             val postComment = PostComment(
                 id = comment.id,
                 authorName = authorName,
                 avatarUrl = profile.photoUrl,
                 commentText = comment.commentText,
-                publicationDate = mapTimestampToDate(comment.publicationDate)
+                publicationDate = mapTimestampToDate(comment.publicationDate * 1_000)
                 // TODO проверить что будет если так. По хорошему нужно умножить на 1_000
             )
 

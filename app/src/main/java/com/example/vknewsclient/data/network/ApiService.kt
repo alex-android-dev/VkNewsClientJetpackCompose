@@ -48,7 +48,7 @@ interface ApiService {
     ): LikesCountResponse?
 
     // TODO подумать как доставать больше комментариев
-    @GET("$GET_COMMENTS?$APP_API_VERSION&extended=1&count=10")
+    @GET("$GET_COMMENTS?$APP_API_VERSION&extended=1&count=100&fields=photo_100")
     suspend fun getCommentsToPost(
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,

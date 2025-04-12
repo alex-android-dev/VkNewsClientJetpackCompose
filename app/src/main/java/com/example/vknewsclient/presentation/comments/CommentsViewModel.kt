@@ -20,10 +20,11 @@ class CommentsViewModel(
 
 
     init {
+        _screenState.value = CommentsScreenState.Loading
         loadComments(feedPost)
     }
 
-    fun loadComments(feedPost: FeedPost) {
+    private fun loadComments(feedPost: FeedPost) {
 
         viewModelScope.launch {
             val comments = repository.loadCommentsToPost(feedPost)
@@ -31,6 +32,7 @@ class CommentsViewModel(
             _screenState.value =
                 CommentsScreenState.Comments(post = feedPost, comments = comments)
         }
+
 
     }
 
