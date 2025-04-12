@@ -21,12 +21,26 @@ class NewsFeedRepository {
     val feedPosts
         get() = _feedPosts.toList()
 
+    private var nextFrom: String? = null
+
 
     suspend fun loadRecommendation(): List<FeedPost> {
-        val response: NewsFeedResponseDto = apiService.loadRecommendations(token)
+        val startFrom = nextFrom
+        // Делаем так, чтобы проверка if - else отрабатывала корректно
+
+        if (startFrom == null && feedPosts.isNotEmpty()) return feedPosts
+
+        val response: NewsFeedResponseDto =
+            if (startFrom == null) {
+                apiService.loadRecommendations(token)
+            } else {
+                apiService.loadRecommendations(token, startFrom)
+            }
+
+        nextFrom = response.newsFeedContent.nextFrom
         val posts = mapper.mapResponseToPosts(response)
         _feedPosts.addAll(posts)
-        return posts
+        return feedPosts
     }
 
     suspend fun addLike(feedPost: FeedPost) {

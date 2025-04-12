@@ -12,7 +12,14 @@ interface ApiService {
     @GET("newsfeed.getRecommended?$APP_API_VERSION")
     suspend fun loadRecommendations(
         @Query("access_token") token: String,
-    ) : NewsFeedResponseDto
+    ): NewsFeedResponseDto
+
+
+    @GET("newsfeed.getRecommended?$APP_API_VERSION")
+    suspend fun loadRecommendations(
+        @Query("access_token") token: String,
+        @Query("start_from") startFrom: String,
+    ): NewsFeedResponseDto
 
 
     @GET("likes.add?$APP_API_VERSION&type=post")
@@ -20,14 +27,14 @@ interface ApiService {
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    ) : LikesCountResponse
+    ): LikesCountResponse
 
     @GET("likes.delete?$APP_API_VERSION&type=post")
     suspend fun deleteLike(
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    ) : LikesCountResponse
+    ): LikesCountResponse
 
 
 }
