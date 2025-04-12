@@ -56,6 +56,12 @@ fun NewsFeedScreen(
             nextDataIsLoading = currentState.nextDataIsLoading
         )
 
+        is NewsFeedScreenState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = DarkBlue)
+            }
+        }
+
         is NewsFeedScreenState.Initial -> {}
     }
 }

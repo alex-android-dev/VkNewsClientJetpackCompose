@@ -18,6 +18,7 @@ class NewsFeedViewModel : ViewModel() {
 
 
     init {
+        _screenState.value = NewsFeedScreenState.Loading
         loadRecommendations()
     }
 
