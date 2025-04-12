@@ -37,14 +37,14 @@ interface ApiService {
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    ): LikesCountResponse
+    ): LikesCountResponse?
 
     @GET("likes.delete?$APP_API_VERSION&$STR_TYPE=$TYPE_POST")
     suspend fun deleteLike(
         @Query("access_token") token: String,
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
-    ): LikesCountResponse
+    ): LikesCountResponse?
 
 
 }

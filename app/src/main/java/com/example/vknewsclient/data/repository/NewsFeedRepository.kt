@@ -1,5 +1,6 @@
 package com.example.vknewsclient.data.repository
 
+import android.util.Log
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.model.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
@@ -8,6 +9,8 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.vk.id.VKID
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class NewsFeedRepository {
 
@@ -21,7 +24,7 @@ class NewsFeedRepository {
         get() = _feedPosts.toList()
 
     private var nextFrom: String? = null
-
+    val mutex = Mutex()
 
     suspend fun loadRecommendation(): List<FeedPost> {
         val startFrom = nextFrom
@@ -59,16 +62,24 @@ class NewsFeedRepository {
 
     suspend fun addLike(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
+
         val response = apiService.addLike(
             token = token,
             ownerId = ownerId,
             postId = feedPost.id
         )
 
-        changeLikeInFeedPosts(response, feedPost)
+        if (response != null) {
+            Log.d("NewsFeedRepository", "response: $response")
+            Log.d("NewsFeedRepository", "feedpost: $feedPost")
+
+            changeLikeInFeedPosts(response, feedPost)
+        }
+
     }
 
     suspend fun deleteLike(feedPost: FeedPost) {
+
         val ownerId = -feedPost.communityId
 
         val response = apiService.deleteLike(
@@ -77,13 +88,16 @@ class NewsFeedRepository {
             postId = feedPost.id,
         )
 
-        changeLikeInFeedPosts(response, feedPost)
+        if (response != null)
+            changeLikeInFeedPosts(response, feedPost)
+
     }
 
     private fun changeLikeInFeedPosts(
         response: LikesCountResponse,
         feedPost: FeedPost,
     ) {
+
         val newLikesCount = response.likesCountDto.count
 
         val newStatistics = feedPost.statistics.toMutableList().apply {
@@ -97,7 +111,8 @@ class NewsFeedRepository {
 
         val postIndex = _feedPosts.indexOf(feedPost)
 
-        _feedPosts[postIndex] = newPost
+        if (postIndex != -1) _feedPosts[postIndex] = newPost
+
     }
 
 

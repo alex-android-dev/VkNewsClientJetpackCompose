@@ -8,9 +8,12 @@ import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class NewsFeedViewModel : ViewModel() {
     private val repository = NewsFeedRepository()
+    private val mutex = Mutex()
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(NewsFeedScreenState.Initial)
     val screenState: LiveData<NewsFeedScreenState>
@@ -37,17 +40,20 @@ class NewsFeedViewModel : ViewModel() {
         loadRecommendations()
     }
 
-    fun changeLikeStatus(feedPost: FeedPost) {
+    fun changeLikeStatus(feedPost: FeedPost?) {
+        if (feedPost == null) return
         viewModelScope.launch {
-            if (feedPost.isLiked) {
-                repository.deleteLike(feedPost)
-            } else {
-                repository.addLike(feedPost)
+            mutex.withLock {
+                if (feedPost.isLiked) {
+                    repository.deleteLike(feedPost)
+                } else {
+                    repository.addLike(feedPost)
+                }
+
+                _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
             }
 
-            _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
-
         // TODO при многократном нажатии приложение падает
         // https://stepik.org/lesson/874315/step/1?unit=878711
     }
