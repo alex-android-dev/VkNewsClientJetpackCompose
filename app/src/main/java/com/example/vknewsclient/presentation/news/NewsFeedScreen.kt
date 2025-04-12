@@ -148,12 +148,6 @@ private fun LazyColumnFeedPosts(
                     onLikeClickListener = { _ ->
                         viewModel.changeLikeStatus(feedPost)
                     },
-                    onShareClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                    onViewsClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
                     onCommentClickListener = {
                         onCommentClickListener(feedPost)
                     },

@@ -40,8 +40,6 @@ import com.example.vknewsclient.ui.theme.DarkRed
 fun PostCard(
     feedPost: FeedPost,
     onLikeClickListener: (StatisticItem) -> Unit,
-    onShareClickListener: (StatisticItem) -> Unit,
-    onViewsClickListener: (StatisticItem) -> Unit,
     onCommentClickListener: (StatisticItem) -> Unit,
 ) {
     Card(
@@ -62,8 +60,6 @@ fun PostCard(
         Statistics(
             statisticItemList = feedPost.statistics,
             onLikeClickListener = onLikeClickListener,
-            onShareClickListener = onShareClickListener,
-            onViewsClickListener = onViewsClickListener,
             onCommentClickListener = onCommentClickListener,
             isFavorite = feedPost.isLiked,
         )
@@ -75,8 +71,6 @@ fun PostCard(
 private fun Statistics(
     statisticItemList: List<StatisticItem>,
     onLikeClickListener: (StatisticItem) -> Unit,
-    onShareClickListener: (StatisticItem) -> Unit,
-    onViewsClickListener: (StatisticItem) -> Unit,
     onCommentClickListener: (StatisticItem) -> Unit,
     isFavorite: Boolean,
 ) {
@@ -93,9 +87,6 @@ private fun Statistics(
             IconWithText(
                 text = formatStatisticCount(viewsItem.count),
                 icon = drawable.ic_views,
-                onItemClickListener = {
-                    onViewsClickListener(viewsItem)
-                },
             )
         }
 
@@ -108,9 +99,7 @@ private fun Statistics(
             IconWithText(
                 text = formatStatisticCount(sharesItem.count),
                 icon = drawable.ic_share,
-                onItemClickListener = {
-                    onShareClickListener(sharesItem)
-                })
+            )
 
             val commentsItem = statisticItemList.getItemByType(StatisticType.COMMENTS)
             IconWithText(
@@ -156,14 +145,16 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 private fun IconWithText(
     text: String,
     icon: Int,
-    onItemClickListener: () -> Unit,
+    onItemClickListener: (() -> Unit)? = null,
     tint: Color = Black500,
 ) {
+    val modifier = if (onItemClickListener == null) Modifier
+    else Modifier.clickable {
+        onItemClickListener()
+    }
 
     Row(
-        modifier = Modifier.clickable {
-            onItemClickListener()
-        }
+        modifier = modifier
     ) {
 
         Icon(

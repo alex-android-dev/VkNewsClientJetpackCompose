@@ -47,6 +47,9 @@ class NewsFeedViewModel : ViewModel() {
 
             _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
+
+        // TODO при многократном нажатии приложение падает
+        // https://stepik.org/lesson/874315/step/1?unit=878711
     }
 
     fun removePost(feedPost: FeedPost) {
@@ -58,39 +61,5 @@ class NewsFeedViewModel : ViewModel() {
             _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
 
-    }
-
-    fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
-        val currentState = screenState.value
-        if (currentState !is NewsFeedScreenState.Posts) return
-
-        val oldFeedPostList = currentState.posts.toMutableList()
-        val oldFeedPostStatistics = feedPost.statistics
-
-        val newStatistics = oldFeedPostStatistics.toMutableList().apply {
-            replaceAll { oldItem ->
-                if (oldItem.type == statisticItem.type) {
-                    oldItem.copy(count = oldItem.count + 1)
-                } else {
-                    oldItem
-                }
-            }
-        }
-
-        val newFeedPost = feedPost.copy(
-            statistics = newStatistics
-        )
-
-        val newFeedPosts = oldFeedPostList.apply {
-            replaceAll {
-                if (it.id == newFeedPost.id) {
-                    newFeedPost
-                } else {
-                    it
-                }
-            }
-        }
-
-        _screenState.value = NewsFeedScreenState.Posts(newFeedPosts)
     }
 }
