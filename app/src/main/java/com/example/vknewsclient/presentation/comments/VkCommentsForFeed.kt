@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.presentation.main.VkTopAppBar
@@ -114,8 +115,8 @@ fun CommentItem(postComment: PostComment) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
-        Icon(
-            painter = painterResource(postComment.avatarUrl),
+        AsyncImage(
+            model = postComment.avatarUrl,
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier,
             contentDescription = null

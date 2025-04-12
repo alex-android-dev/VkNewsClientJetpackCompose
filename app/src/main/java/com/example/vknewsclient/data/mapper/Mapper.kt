@@ -1,15 +1,19 @@
 package com.example.vknewsclient.data.mapper
 
-import com.example.vknewsclient.data.mapper.MapTimestampToDate.mapTimestampToDate
+import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
+import java.sql.Date
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.absoluteValue
 
-class NewsFeedMapper {
+class Mapper {
 
-    fun mapResponseToPosts(responseDto: NewsFeedResponseDto): List<FeedPost> {
+    fun mapNewsFeedResponseToPosts(responseDto: NewsFeedResponseDto): List<FeedPost> {
         val result = mutableListOf<FeedPost>()
 
         val posts = responseDto.newsFeedContent.posts
@@ -43,6 +47,37 @@ class NewsFeedMapper {
         }
 
         return result
+    }
+
+    fun mapCommentsResponseDtoToComments(responseDto: CommentsResponseDto): List<PostComment> {
+        val result = mutableListOf<PostComment>()
+
+        val comments = responseDto.commentsContent.comments
+        val profiles = responseDto.commentsContent.profiles
+
+        comments.forEach { comment ->
+            val profile = profiles.find { comment.fromProfileId == it.id } ?: return@forEach
+            val authorName = profile.firstName + profile.lastName
+
+            val postComment = PostComment(
+                id = comment.id,
+                authorName = authorName,
+                avatarUrl = profile.photoUrl,
+                commentText = comment.commentText,
+                publicationDate = mapTimestampToDate(comment.publicationDate)
+                // TODO проверить что будет если так. По хорошему нужно умножить на 1_000
+            )
+
+            result.add(postComment)
+        }
+
+
+        return result
+    }
+
+    private fun mapTimestampToDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        return SimpleDateFormat("d MMMM yyyy, hh:mm", Locale.getDefault()).format(date)
     }
 
 

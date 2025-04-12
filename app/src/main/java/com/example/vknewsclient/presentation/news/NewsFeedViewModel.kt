@@ -4,15 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vknewsclient.data.repository.NewsFeedRepository
+import com.example.vknewsclient.data.repository.Repository
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.StatisticItem
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class NewsFeedViewModel : ViewModel() {
-    private val repository = NewsFeedRepository()
+    private val repository = Repository()
     private val mutex = Mutex()
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(NewsFeedScreenState.Initial)
