@@ -56,6 +56,12 @@ fun NewsFeedScreen(
             nextDataIsLoading = currentState.nextDataIsLoading
         )
 
+        is NewsFeedScreenState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = DarkBlue)
+            }
+        }
+
         is NewsFeedScreenState.Initial -> {}
     }
 }
@@ -141,12 +147,6 @@ private fun LazyColumnFeedPosts(
                     feedPost,
                     onLikeClickListener = { _ ->
                         viewModel.changeLikeStatus(feedPost)
-                    },
-                    onShareClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
-                    },
-                    onViewsClickListener = {
-                        viewModel.updateStatisticCard(feedPost, it)
                     },
                     onCommentClickListener = {
                         onCommentClickListener(feedPost)

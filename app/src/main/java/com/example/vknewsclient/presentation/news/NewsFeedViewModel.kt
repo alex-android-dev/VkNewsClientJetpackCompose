@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class NewsFeedViewModel : ViewModel() {
-
-    //    private val mapper = NewsFeedMapper() // TODO в будущем будем инжектить
     private val repository = NewsFeedRepository()
+    private val mutex = Mutex()
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(NewsFeedScreenState.Initial)
     val screenState: LiveData<NewsFeedScreenState>
@@ -21,6 +21,7 @@ class NewsFeedViewModel : ViewModel() {
 
 
     init {
+        _screenState.value = NewsFeedScreenState.Loading
         loadRecommendations()
     }
 
@@ -39,60 +40,32 @@ class NewsFeedViewModel : ViewModel() {
         loadRecommendations()
     }
 
-    fun changeLikeStatus(feedPost: FeedPost) {
+    fun changeLikeStatus(feedPost: FeedPost?) {
+        if (feedPost == null) return
         viewModelScope.launch {
-            if (feedPost.isLiked) {
-                repository.deleteLike(feedPost)
-            } else {
-                repository.addLike(feedPost)
+            mutex.withLock {
+                if (feedPost.isLiked) {
+                    repository.deleteLike(feedPost)
+                } else {
+                    repository.addLike(feedPost)
+                }
+
+                _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
             }
 
-            _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
+        // TODO при многократном нажатии приложение падает
+        // https://stepik.org/lesson/874315/step/1?unit=878711
     }
 
     fun removePost(feedPost: FeedPost) {
         val currentState = screenState.value
         if (currentState !is NewsFeedScreenState.Posts) return
 
-        val oldFeedPostList = currentState.posts.toMutableList()
-
-        val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
-        oldFeedPostList.remove(feedPostForDelete)
-        _screenState.value = NewsFeedScreenState.Posts(oldFeedPostList)
-    }
-
-    fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
-        val currentState = screenState.value
-        if (currentState !is NewsFeedScreenState.Posts) return
-
-        val oldFeedPostList = currentState.posts.toMutableList()
-        val oldFeedPostStatistics = feedPost.statistics
-
-        val newStatistics = oldFeedPostStatistics.toMutableList().apply {
-            replaceAll { oldItem ->
-                if (oldItem.type == statisticItem.type) {
-                    oldItem.copy(count = oldItem.count + 1)
-                } else {
-                    oldItem
-                }
-            }
+        viewModelScope.launch {
+            repository.removePost(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(repository.feedPosts)
         }
 
-        val newFeedPost = feedPost.copy(
-            statistics = newStatistics
-        )
-
-        val newFeedPosts = oldFeedPostList.apply {
-            replaceAll {
-                if (it.id == newFeedPost.id) {
-                    newFeedPost
-                } else {
-                    it
-                }
-            }
-        }
-
-        _screenState.value = NewsFeedScreenState.Posts(newFeedPosts)
     }
 }
