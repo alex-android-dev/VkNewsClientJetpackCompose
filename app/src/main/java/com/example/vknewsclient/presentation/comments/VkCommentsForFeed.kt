@@ -115,7 +115,7 @@ fun CommentItem(postComment: PostComment) {
     ) {
 
         Icon(
-            painter = painterResource(postComment.authorAvatarId),
+            painter = painterResource(postComment.avatarUrl),
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier,
             contentDescription = null

@@ -2,15 +2,14 @@ package com.example.vknewsclient.data.repository
 
 import android.util.Log
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
-import com.example.vknewsclient.data.model.LikesCountResponse
-import com.example.vknewsclient.data.model.NewsFeedResponseDto
+import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
+import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.vk.id.VKID
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class NewsFeedRepository {
 

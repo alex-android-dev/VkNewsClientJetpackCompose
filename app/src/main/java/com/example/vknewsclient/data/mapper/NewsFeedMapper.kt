@@ -1,12 +1,10 @@
 package com.example.vknewsclient.data.mapper
 
-import com.example.vknewsclient.data.model.NewsFeedResponseDto
+import com.example.vknewsclient.data.mapper.MapTimestampToDate.mapTimestampToDate
+import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
-import java.sql.Date
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.math.absoluteValue
 
 class NewsFeedMapper {
@@ -47,9 +45,5 @@ class NewsFeedMapper {
         return result
     }
 
-    private fun mapTimestampToDate(timestamp: Long): String {
-        val date = Date(timestamp)
-        return SimpleDateFormat("d MMMM yyyy, hh:mm", Locale.getDefault()).format(date)
-    }
 
 }
