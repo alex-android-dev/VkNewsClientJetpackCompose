@@ -1,6 +1,5 @@
 package com.example.vknewsclient.data.repository
 
-import android.util.Log
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.model.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
@@ -41,6 +40,18 @@ class NewsFeedRepository {
         val posts = mapper.mapResponseToPosts(response)
         _feedPosts.addAll(posts)
         return feedPosts
+    }
+
+    suspend fun removeItem(feedPost: FeedPost) {
+        val ownerId = -(feedPost.communityId)
+        val postId = feedPost.id
+
+        apiService.removeItem(
+            token = token,
+            ownerId = ownerId,
+            postId = postId,
+        )
+
     }
 
     suspend fun addLike(feedPost: FeedPost) {

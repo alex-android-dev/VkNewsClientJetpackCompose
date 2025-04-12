@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel : ViewModel() {
@@ -55,11 +54,15 @@ class NewsFeedViewModel : ViewModel() {
         val currentState = screenState.value
         if (currentState !is NewsFeedScreenState.Posts) return
 
-        val oldFeedPostList = currentState.posts.toMutableList()
+        viewModelScope.launch {
+            repository.removeItem(feedPost)
+        }
 
-        val feedPostForDelete = oldFeedPostList.find { it.id == feedPost.id }
-        oldFeedPostList.remove(feedPostForDelete)
-        _screenState.value = NewsFeedScreenState.Posts(oldFeedPostList)
+        val feedPostList = currentState.posts.toMutableList()
+
+        val feedPostForDelete = feedPostList.find { it.id == feedPost.id }
+        feedPostList.remove(feedPostForDelete)
+        _screenState.value = NewsFeedScreenState.Posts(feedPostList)
     }
 
     fun updateStatisticCard(feedPost: FeedPost, statisticItem: StatisticItem) {
