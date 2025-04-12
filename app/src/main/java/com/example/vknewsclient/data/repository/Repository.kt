@@ -1,21 +1,21 @@
 package com.example.vknewsclient.data.repository
 
 import android.util.Log
-import com.example.vknewsclient.data.mapper.NewsFeedMapper
-import com.example.vknewsclient.data.model.LikesCountResponse
-import com.example.vknewsclient.data.model.NewsFeedResponseDto
+import com.example.vknewsclient.data.mapper.Mapper
+import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
+import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
+import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.vk.id.VKID
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
-class NewsFeedRepository {
+class Repository {
 
     private val apiService = ApiFactory.apiService
-    private val mapper = NewsFeedMapper()
+    private val mapper = Mapper()
     private val token = VKID.Companion.instance.accessToken?.token
         ?: throw IllegalStateException("token is null")
 
@@ -24,7 +24,6 @@ class NewsFeedRepository {
         get() = _feedPosts.toList()
 
     private var nextFrom: String? = null
-    val mutex = Mutex()
 
     suspend fun loadRecommendation(): List<FeedPost> {
         val startFrom = nextFrom
@@ -40,13 +39,28 @@ class NewsFeedRepository {
             }
 
         nextFrom = response.newsFeedContent.nextFrom
-        val posts = mapper.mapResponseToPosts(response)
+        val posts = mapper.mapNewsFeedResponseToPosts(response)
         _feedPosts.addAll(posts)
         return feedPosts
     }
 
+    suspend fun loadCommentsToPost(feedPost: FeedPost): List<PostComment> {
+        val ownerId = -feedPost.communityId
+        // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
+
+        val response: CommentsResponseDto = apiService.getCommentsToPost(
+            token = token,
+            ownerId = ownerId,
+            postId = feedPost.id
+        )
+
+        return mapper.mapCommentsResponseDtoToComments(response)
+    }
+
     suspend fun removePost(feedPost: FeedPost) {
-        val ownerId = -(feedPost.communityId)
+        val ownerId = -feedPost.communityId
+        // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
+
         val postId = feedPost.id
 
         apiService.removeItem(
@@ -62,6 +76,7 @@ class NewsFeedRepository {
 
     suspend fun addLike(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
+        // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
 
         val response = apiService.addLike(
             token = token,
@@ -79,8 +94,8 @@ class NewsFeedRepository {
     }
 
     suspend fun deleteLike(feedPost: FeedPost) {
-
         val ownerId = -feedPost.communityId
+        // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
 
         val response = apiService.deleteLike(
             token = token,
@@ -97,7 +112,6 @@ class NewsFeedRepository {
         response: LikesCountResponse,
         feedPost: FeedPost,
     ) {
-
         val newLikesCount = response.likesCountDto.count
 
         val newStatistics = feedPost.statistics.toMutableList().apply {

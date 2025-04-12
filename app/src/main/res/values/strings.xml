@@ -33,6 +33,10 @@
         Войти
     </string>
 
+    <string name="comments_title">
+        Комментарии
+    </string>
+
 
 
 </resources>

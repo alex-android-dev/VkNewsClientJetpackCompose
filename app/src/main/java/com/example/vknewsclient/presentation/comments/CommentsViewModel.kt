@@ -3,9 +3,10 @@ package com.example.vknewsclient.presentation.comments
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.vknewsclient.data.repository.Repository
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.PostComment
-import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 class CommentsViewModel(
     feedPost: FeedPost,
@@ -15,31 +16,24 @@ class CommentsViewModel(
     val screenState: LiveData<CommentsScreenState>
         get() = _screenState
 
+    private val repository = Repository()
+
 
     init {
+        _screenState.value = CommentsScreenState.Loading
         loadComments(feedPost)
     }
 
-    fun loadComments(feedPost: FeedPost) {
-        val comments = createFakeCommentsList()
+    private fun loadComments(feedPost: FeedPost) {
 
-        _screenState.value =
-            CommentsScreenState.Comments(post = feedPost, comments = comments)
-    }
+        viewModelScope.launch {
+            val comments = repository.loadCommentsToPost(feedPost)
 
-    private fun createFakeCommentsList(): List<PostComment> {
-        return mutableListOf<PostComment>().apply {
-            repeat(
-                Random.nextInt(10, 30)
-            ) {
-                add(
-                    PostComment(
-                        id = it,
-                        authorName = "author number $it",
-                    )
-                )
-            }
-        }.toList()
+            _screenState.value =
+                CommentsScreenState.Comments(post = feedPost, comments = comments)
+        }
+
+
     }
 
 

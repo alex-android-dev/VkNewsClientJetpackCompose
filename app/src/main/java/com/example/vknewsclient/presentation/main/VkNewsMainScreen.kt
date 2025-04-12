@@ -38,6 +38,7 @@ fun VkNewsMainScreen() {
             },
             commentsScreenContent = { feedPost ->
                 VkCommentsScreen(
+                    paddingValues,
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()
                         // Если пользователь кликает на кнопку назад, то закрываем экран

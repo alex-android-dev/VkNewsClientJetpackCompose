@@ -7,6 +7,7 @@ sealed class CommentsScreenState {
     object Initial : CommentsScreenState()
     // Необходим, чтобы отрисовать какой-то прогресс при старте загрузки
 
-//    data class Posts(val posts: List<FeedPost>) : CommentsScreenState()
+    object Loading : CommentsScreenState()
+
     data class Comments(val post: FeedPost, val comments: List<PostComment>) : CommentsScreenState()
 }

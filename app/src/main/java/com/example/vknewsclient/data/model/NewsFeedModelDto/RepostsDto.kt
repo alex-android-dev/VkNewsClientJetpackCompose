@@ -1,8 +1,8 @@
-package com.example.vknewsclient.data.model
+package com.example.vknewsclient.data.model.NewsFeedModelDto
 
 import com.google.gson.annotations.SerializedName
 
-data class CommentsDto(
+data class RepostsDto(
     @SerializedName("count") val count: Int
 ) {
 }
