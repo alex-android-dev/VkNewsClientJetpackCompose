@@ -38,9 +38,6 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
-import java.nio.file.WatchEvent
-
-const val COMMENTS_FOR_POST_TITLE_SCAFFOLD_STR = "Comments for Post"
 
 @Composable
 fun VkCommentsScreen(
@@ -137,15 +134,7 @@ private fun CommentItem(postComment: PostComment) {
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
-//        verticalAlignment = Alignment.CenterVertically,
     ) {
-
-//        AsyncImage(
-//            model = postComment.avatarUrl,
-//            tint = MaterialTheme.colorScheme.onBackground,
-//            modifier = Modifier,
-//            contentDescription = null
-//        )
 
         AsyncImage(
             modifier = Modifier
@@ -155,7 +144,7 @@ private fun CommentItem(postComment: PostComment) {
             contentDescription = null,
             contentScale = ContentScale.Fit,
             alignment = Alignment.TopCenter
-        ) // TODO проверить корректность
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -168,30 +157,3 @@ private fun CommentItem(postComment: PostComment) {
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun PreviewPostComment() {
-//
-//    val postCommentsList = mutableListOf<PostComment>().apply {
-//        repeat(20) {
-//            add(
-//                PostComment(
-//                    id = it,
-//                    authorName = "author number $it",
-//                )
-//            )
-//        }
-//    }.toList()
-//
-//    val feedPost = FeedPost(
-//        id = 85
-//    )
-//
-//
-//    VkCommentsForFeedPosts(postCommentsList, feedPost)
-//
-//}
-
-
-// todo: остался баг последний комментарий почему-то не отображается
