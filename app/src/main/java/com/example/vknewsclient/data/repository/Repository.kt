@@ -11,6 +11,8 @@ import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.vk.id.VKID
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class Repository {
 
@@ -25,11 +27,14 @@ class Repository {
 
     private var nextFrom: String? = null
 
-    suspend fun loadRecommendation(): List<FeedPost> {
+    fun loadRecommendation(): Flow<List<FeedPost>> = flow {
         val startFrom = nextFrom
         // Делаем так, чтобы проверка if - else отрабатывала корректно
 
-        if (startFrom == null && feedPosts.isNotEmpty()) return feedPosts
+        if (startFrom == null && feedPosts.isNotEmpty()) {
+            emit(feedPosts)
+            return@flow
+        }
 
         val response: NewsFeedResponseDto =
             if (startFrom == null) {
@@ -41,7 +46,7 @@ class Repository {
         nextFrom = response.newsFeedContent.nextFrom
         val posts = mapper.mapNewsFeedResponseToPosts(response)
         _feedPosts.addAll(posts)
-        return feedPosts
+        emit(feedPosts)
     }
 
     suspend fun loadCommentsToPost(feedPost: FeedPost): List<PostComment> {

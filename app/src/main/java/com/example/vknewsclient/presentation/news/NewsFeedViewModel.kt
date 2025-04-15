@@ -26,9 +26,11 @@ class NewsFeedViewModel : ViewModel() {
 
     private fun loadRecommendations() {
         viewModelScope.launch {
-            val feedPosts = repository.loadRecommendation()
-            _screenState.value =
-                NewsFeedScreenState.Posts(posts = feedPosts, nextDataIsLoading = false)
+            repository.loadRecommendation().collect {
+                _screenState.value =
+                    NewsFeedScreenState.Posts(posts = it, nextDataIsLoading = false)
+            }
+
         }
     }
 
