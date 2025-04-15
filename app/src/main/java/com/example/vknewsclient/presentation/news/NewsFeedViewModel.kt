@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.Repository
 import com.example.vknewsclient.domain.FeedPost
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -26,10 +27,13 @@ class NewsFeedViewModel : ViewModel() {
 
     private fun loadRecommendations() {
         viewModelScope.launch {
-            repository.loadRecommendation().collect {
-                _screenState.value =
-                    NewsFeedScreenState.Posts(posts = it, nextDataIsLoading = false)
-            }
+            repository
+                .recommendations
+                .filter { it.isNotEmpty() }
+                .collect {
+                    _screenState.value =
+                        NewsFeedScreenState.Posts(posts = it, nextDataIsLoading = false)
+                }
 
         }
     }
@@ -38,7 +42,9 @@ class NewsFeedViewModel : ViewModel() {
         _screenState.value =
             NewsFeedScreenState.Posts(posts = repository.feedPosts, nextDataIsLoading = true)
 
-        loadRecommendations()
+        viewModelScope.launch {
+            repository.loadNextData()
+        }
     }
 
     fun changeLikeStatus(feedPost: FeedPost?) {

@@ -11,8 +11,15 @@ import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.vk.id.VKID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 
 class Repository {
 
@@ -27,26 +34,45 @@ class Repository {
 
     private var nextFrom: String? = null
 
-    fun loadRecommendation(): Flow<List<FeedPost>> = flow {
-        val startFrom = nextFrom
-        // Делаем так, чтобы проверка if - else отрабатывала корректно
+    private val scope = CoroutineScope(Dispatchers.Default)
 
-        if (startFrom == null && feedPosts.isNotEmpty()) {
-            emit(feedPosts)
-            return@flow
-        }
+    private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
+    // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
 
-        val response: NewsFeedResponseDto =
-            if (startFrom == null) {
-                apiService.loadRecommendations(token)
-            } else {
-                apiService.loadRecommendations(token, startFrom)
+
+    val recommendations: Flow<List<FeedPost>> = flow {
+        nextDataNeededEvents.emit(Unit)
+        /* Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
+        Эмит прилетает -> стартует загрузка данных
+         */
+
+        nextDataNeededEvents.collect() {
+            val startFrom = nextFrom
+            // Делаем так, чтобы проверка if - else отрабатывала корректно
+
+            if (startFrom == null && feedPosts.isNotEmpty()) {
+                emit(feedPosts)
+                return@collect
             }
 
-        nextFrom = response.newsFeedContent.nextFrom
-        val posts = mapper.mapNewsFeedResponseToPosts(response)
-        _feedPosts.addAll(posts)
-        emit(feedPosts)
+            val response: NewsFeedResponseDto =
+                if (startFrom == null) {
+                    apiService.loadRecommendations(token)
+                } else {
+                    apiService.loadRecommendations(token, startFrom)
+                }
+
+            nextFrom = response.newsFeedContent.nextFrom
+            val posts = mapper.mapNewsFeedResponseToPosts(response)
+            _feedPosts.addAll(posts)
+            emit(feedPosts)
+        }
+    }.stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = feedPosts)
+
+
+    suspend fun loadNextData() {
+        delay(2000)
+        nextDataNeededEvents.emit(Unit)
     }
 
     suspend fun loadCommentsToPost(feedPost: FeedPost): List<PostComment> {
