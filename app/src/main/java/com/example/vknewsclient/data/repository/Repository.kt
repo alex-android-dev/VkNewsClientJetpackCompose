@@ -10,14 +10,14 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
+import com.example.vknewsclient.extensions.mergeWith
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
@@ -29,18 +29,15 @@ class Repository {
         ?: throw IllegalStateException("token is null")
 
     private val _feedPosts = mutableListOf<FeedPost>()
-    val feedPosts
+    private val feedPostList
         get() = _feedPosts.toList()
 
     private var nextFrom: String? = null
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
-    // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
-
-
-    val recommendations: Flow<List<FeedPost>> = flow {
+    private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
+    private val loadedListFlow = flow {
         nextDataNeededEvents.emit(Unit)
         /* Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
         Эмит прилетает -> стартует загрузка данных
@@ -50,8 +47,8 @@ class Repository {
             val startFrom = nextFrom
             // Делаем так, чтобы проверка if - else отрабатывала корректно
 
-            if (startFrom == null && feedPosts.isNotEmpty()) {
-                emit(feedPosts)
+            if (startFrom == null && feedPostList.isNotEmpty()) {
+                emit(feedPostList)
                 return@collect
             }
 
@@ -65,9 +62,18 @@ class Repository {
             nextFrom = response.newsFeedContent.nextFrom
             val posts = mapper.mapNewsFeedResponseToPosts(response)
             _feedPosts.addAll(posts)
-            emit(feedPosts)
+            emit(feedPostList)
         }
-    }.stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = feedPosts)
+    }
+
+    private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
+    // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
+
+
+    val recommendations: StateFlow<List<FeedPost>> =
+        loadedListFlow
+            .mergeWith(refreshedListFlow)
+            .stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = feedPostList)
 
 
     suspend fun loadNextData() {
@@ -102,7 +108,7 @@ class Repository {
 
         val feedPostItem = _feedPosts.find { it.id == feedPost.id }
         _feedPosts.remove(feedPostItem)
-
+        refreshedListFlow.emit(feedPostList)
     }
 
     suspend fun addLike(feedPost: FeedPost) {
@@ -139,7 +145,7 @@ class Repository {
 
     }
 
-    private fun changeLikeInFeedPosts(
+    private suspend fun changeLikeInFeedPosts(
         response: LikesCountResponse,
         feedPost: FeedPost,
     ) {
@@ -157,7 +163,7 @@ class Repository {
         val postIndex = _feedPosts.indexOf(feedPost)
 
         if (postIndex != -1) _feedPosts[postIndex] = newPost
-
+        refreshedListFlow.emit(feedPostList)
     }
 
 
