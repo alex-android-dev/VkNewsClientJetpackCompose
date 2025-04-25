@@ -13,8 +13,8 @@ vkidManifestPlaceholders {
     // Или укажите значения явно через properties, если не хотите использовать плейсхолдеры.
 
     vkidRedirectHost = "vk.com"
-    vkidRedirectScheme = project.findProperty("VKID_REDIRECT_SCHEME").toString()
-    vkidClientId = project.findProperty("VKID_CLIENT_ID").toString()
+    vkidRedirectScheme = "vk53393600"
+    vkidClientId = "53393600"
     vkidClientSecret = project.findProperty("VKID_CLIENT_SECRET").toString()
 
 }
