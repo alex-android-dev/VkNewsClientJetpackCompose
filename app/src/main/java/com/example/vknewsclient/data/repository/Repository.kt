@@ -37,6 +37,8 @@ class Repository {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
+
+    // Отвечает за загрузку новых данных
     private val loadedListFlow = flow {
         nextDataNeededEvents.emit(Unit)
         /* Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу

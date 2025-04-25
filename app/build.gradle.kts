@@ -53,7 +53,6 @@ dependencies {
     implementation(libs.vkid)
     implementation(libs.onetap.compose)
     implementation(libs.vk.sdk.support)
-    implementation(libs.coil)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
