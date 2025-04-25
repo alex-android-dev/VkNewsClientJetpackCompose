@@ -11,8 +11,10 @@ plugins {
 vkidManifestPlaceholders {
     // Добавьте плейсхолдеры сокращенным способом. Например, vkidRedirectHost будет "vk.com", а vkidRedirectScheme будет "vk$clientId".
     // Или укажите значения явно через properties, если не хотите использовать плейсхолдеры.
-    vkidRedirectHost = "vk.com" // Обычно vk.com.
-    vkidRedirectScheme = "vk53393600" // Строго в формате vk{ID приложения}.
+
+    vkidRedirectHost = "vk.com"
+    vkidRedirectScheme = "vk53393600"
     vkidClientId = "53393600"
-    vkidClientSecret = "KqEy0byDBGHrY4MwBG90"
+    vkidClientSecret = project.findProperty("VKID_CLIENT_SECRET").toString()
+
 }
