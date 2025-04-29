@@ -7,6 +7,7 @@ import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.NewsFeedResult
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
@@ -18,7 +19,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
 class Repository {
@@ -67,11 +71,24 @@ class Repository {
             emit(feedPostList)
         }
     }
+        /** Маппим к классу Result и передаем наружу **/
+//        .map {
+//            NewsFeedResult.Success(it) as NewsFeedResult
+//        }
+        .retry {
+            /** Данный блок позволяет повторять запрос с определенной задержкой (чтобы не ддосить сервер) **/
+            delay(RETRY_TIMEOUT_MILLIS)
+            true
+        }
+//        .catch {
+    /** Происходит после retry **/
+    /** Холодный флоу больше не эмитит данные **/
+//            emit(NewsFeedResult.Error)
+//        }
 
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
+
     // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
-
-
     val recommendations: StateFlow<List<FeedPost>> =
         loadedListFlow
             .mergeWith(refreshedListFlow)
@@ -168,6 +185,9 @@ class Repository {
         refreshedListFlow.emit(feedPostList)
     }
 
+    companion object {
+        private const val RETRY_TIMEOUT_MILLIS: Long = 3000L
+    }
 
 //    suspend fun refreshToken() {
 //        Log.d("NewsFeedRepository", "refreshToken()")
