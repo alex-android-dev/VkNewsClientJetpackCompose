@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class NewsFeedViewModel : ViewModel() {
     private val repository = Repository()
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
-    private val recommendationsFlow = repository.recommendations
+    private val recommendationsFlow = repository.recommendationPosts
 
     /** Необходим, чтобы отлавливать ошибки при удалении и изменении лайка **/
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
@@ -25,7 +25,7 @@ class NewsFeedViewModel : ViewModel() {
 
     /** Добавлять сюда catch или retry не имеет смысла, поскольку горячий флоу живет всегда **/
     val screenState = repository
-        .recommendations
+        .recommendationPosts
         .filter { it.isNotEmpty() }
         .map { NewsFeedScreenState.Posts(posts = it) as NewsFeedScreenState }
         .onStart { emit(NewsFeedScreenState.Loading) }

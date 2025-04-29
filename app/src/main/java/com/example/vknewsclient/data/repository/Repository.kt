@@ -7,7 +7,6 @@ import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedResult
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
@@ -16,12 +15,12 @@ import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
@@ -45,9 +44,9 @@ class Repository {
     // Отвечает за загрузку новых данных
     private val loadedListFlow = flow {
         nextDataNeededEvents.emit(Unit)
-        /* Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
-        Эмит прилетает -> стартует загрузка данных
-         */
+        /**
+         * Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
+         * Эмит прилетает -> стартует загрузка данных **/
 
         nextDataNeededEvents.collect() {
             val startFrom = nextFrom
@@ -75,7 +74,7 @@ class Repository {
 //        .map {
 //            NewsFeedResult.Success(it) as NewsFeedResult
 //        }
-        .retry {
+        .retry(RETRY_TRIES) {
             /** Данный блок позволяет повторять запрос с определенной задержкой (чтобы не ддосить сервер) **/
             delay(RETRY_TIMEOUT_MILLIS)
             true
@@ -89,28 +88,33 @@ class Repository {
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
 
     // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
-    val recommendations: StateFlow<List<FeedPost>> =
+    val recommendationPosts: StateFlow<List<FeedPost>> =
         loadedListFlow
             .mergeWith(refreshedListFlow)
             .stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = feedPostList)
 
 
-    suspend fun loadNextData() {
-        delay(2000)
-        nextDataNeededEvents.emit(Unit)
-    }
+    val commentsToPost = MutableStateFlow<List<PostComment>>(listOf())
 
-    suspend fun loadCommentsToPost(feedPost: FeedPost): List<PostComment> {
+    // TODO тут достаточно использовать холодные флоу. Переделать
+    suspend fun loadCommentsToPost(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
         // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
-
         val response: CommentsResponseDto = apiService.getCommentsToPost(
             token = token,
             ownerId = ownerId,
             postId = feedPost.id
         )
 
-        return mapper.mapCommentsResponseDtoToComments(response)
+        val comments = mapper.mapCommentsResponseDtoToComments(response)
+        Log.d("Repository", "Comments: $comments")
+
+        commentsToPost.emit(comments)
+    }
+
+    suspend fun loadNextData() {
+        delay(2000)
+        nextDataNeededEvents.emit(Unit)
     }
 
     suspend fun removePost(feedPost: FeedPost) {
@@ -187,6 +191,7 @@ class Repository {
 
     companion object {
         private const val RETRY_TIMEOUT_MILLIS: Long = 3000L
+        private const val RETRY_TRIES: Long = 3L
     }
 
 //    suspend fun refreshToken() {
