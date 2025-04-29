@@ -1,5 +1,6 @@
 package com.example.vknewsclient.presentation.comments
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,10 +25,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.colorspace.WhitePoint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,6 +41,7 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
+import kotlinx.coroutines.flow.asStateFlow
 
 @Composable
 fun VkCommentsScreen(
@@ -49,8 +53,7 @@ fun VkCommentsScreen(
         factory = CommentsViewModelFactory(feedPost),
     )
 
-    val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
-    val currentState = screenState.value
+    val screenState = viewModel.state.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -66,36 +69,23 @@ fun VkCommentsScreen(
         },
     ) { paddingValues ->
 
-        when (currentState) {
-            is CommentsScreenState.Comments -> {
-                LazyColumnCommentsForFeedPost(
-                    paddingValues,
-                    currentState.comments,
-                )
-            }
+        when (val currentState = screenState.value) {
+            is CommentsScreenState.Comments -> LazyColumnCommentsForFeedPost(
+                paddingValues,
+                currentState.comments
+            )
 
-            CommentsScreenState.Loading -> {
+            is CommentsScreenState.Loading -> {
+                Log.d("VkCommentsScreen", "Loading")
                 ShowLoading()
             }
 
-            CommentsScreenState.Initial -> {}
+            is CommentsScreenState.Initial -> {}
         }
 
     }
 }
 
-@Composable
-private fun ShowLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(20.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(color = DarkBlue)
-    }
-}
 
 @Composable
 private fun LazyColumnCommentsForFeedPost(
@@ -155,5 +145,17 @@ private fun CommentItem(postComment: PostComment) {
             Text(postComment.commentText)
             Text(postComment.publicationDate)
         }
+    }
+}
+
+@Composable
+private fun ShowLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = DarkBlue)
     }
 }
