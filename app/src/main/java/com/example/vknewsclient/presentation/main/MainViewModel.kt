@@ -12,31 +12,27 @@ import com.vk.id.refresh.VKIDRefreshTokenCallback
 import com.vk.id.refresh.VKIDRefreshTokenFail
 import com.vk.id.refreshuser.VKIDGetUserCallback
 import com.vk.id.refreshuser.VKIDGetUserFail
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel() : ViewModel() {
 
-    private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
-    val authState = _authState
+//    private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
+//    val authState = _authState
+
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
+    val authState = _authState.asStateFlow()
 
     init {
         val token = VKID.Companion.instance.accessToken?.token
         Log.d("MainViewModel", "token: ${VKID.Companion.instance.accessToken?.token}")
-
-        viewModelScope.launch {
-            getUserData()
-            // TODO доделать refreshToken
-        }
 
         if (token != null) {
             _authState.value = AuthState.Authorized
         } else {
             _authState.value = AuthState.NonAuthorized
         }
-
-//        viewModelScope.launch {
-//            repository.refreshToken()
-//        } // TODO доделать
 
     }
 

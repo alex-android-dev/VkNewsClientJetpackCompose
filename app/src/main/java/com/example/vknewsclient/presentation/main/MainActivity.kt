@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             VkNewsClientTheme() {
                 val viewModel: MainViewModel = viewModel()
-                val authState = viewModel.authState.observeAsState(AuthState.Initial)
+                val authState = viewModel.authState.collectAsState(AuthState.Initial)
 
                 when (authState.value) {
                     is AuthState.Authorized -> VkNewsMainScreen(
