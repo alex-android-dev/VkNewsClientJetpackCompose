@@ -37,6 +37,7 @@ class MainViewModel() : ViewModel() {
     }
 
     fun setFail(fail: VKIDAuthFail) {
+        // TODO это ответственность репозитория
         when (fail) {
             is VKIDAuthFail.Canceled -> Log.d("LoginScreen", "Failed Canceled")
             is VKIDAuthFail.FailedApiCall -> Log.d("LoginScreen", "Failed ApiCall")
@@ -86,6 +87,7 @@ class MainViewModel() : ViewModel() {
 
 
     private fun getUserData() {
+        // TODO это ответственность репозитория
         viewModelScope.launch {
             VKID.instance.getUserData(
                 callback = object : VKIDGetUserCallback {
