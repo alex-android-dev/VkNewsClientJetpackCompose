@@ -6,7 +6,9 @@ import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
+import com.example.vknewsclient.data.network.ApiFactory.apiService
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.NewsFeedResult
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
@@ -20,7 +22,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
@@ -39,7 +43,7 @@ class Repository {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
+    private val refreshedListFlow = MutableSharedFlow<NewsFeedResult>()
 
     // Отвечает за загрузку новых данных
     private val loadedListFlow = flow {
@@ -71,27 +75,31 @@ class Repository {
         }
     }
         /** Маппим к классу Result и передаем наружу **/
-//        .map {
-//            NewsFeedResult.Success(it) as NewsFeedResult
-//        }
+        .map {
+            NewsFeedResult.Success(it) as NewsFeedResult
+        }
         .retry(RETRY_TRIES) {
             /** Данный блок позволяет повторять запрос с определенной задержкой (чтобы не ддосить сервер) **/
             delay(RETRY_TIMEOUT_MILLIS)
             true
         }
-//        .catch {
-    /** Происходит после retry **/
-    /** Холодный флоу больше не эмитит данные **/
-//            emit(NewsFeedResult.Error)
-//        }
+        .catch {
+            /** Происходит после retry **/
+            /** Холодный флоу больше не эмитит данные **/
+            emit(NewsFeedResult.Error)
+        }
 
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
 
     // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
-    val recommendationPosts: StateFlow<List<FeedPost>> =
+    val recommendationPosts: StateFlow<NewsFeedResult> =
         loadedListFlow
             .mergeWith(refreshedListFlow)
-            .stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = feedPostList)
+            .stateIn(
+                scope = scope,
+                started = SharingStarted.Lazily,
+                initialValue = NewsFeedResult.Success(feedPostList)
+            )
 
 
     val commentsToPost = MutableStateFlow<List<PostComment>>(listOf())
@@ -131,7 +139,8 @@ class Repository {
 
         val feedPostItem = _feedPosts.find { it.id == feedPost.id }
         _feedPosts.remove(feedPostItem)
-        refreshedListFlow.emit(feedPostList)
+
+        refreshedListFlow.emit(NewsFeedResult.Success(feedPostList))
     }
 
     suspend fun addLike(feedPost: FeedPost) {
@@ -186,7 +195,7 @@ class Repository {
         val postIndex = _feedPosts.indexOf(feedPost)
 
         if (postIndex != -1) _feedPosts[postIndex] = newPost
-        refreshedListFlow.emit(feedPostList)
+        refreshedListFlow.emit(NewsFeedResult.Success(feedPostList))
     }
 
     companion object {

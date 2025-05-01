@@ -40,13 +40,13 @@ import com.example.vknewsclient.ui.theme.DarkBlue
 fun NewsFeedScreen(
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit,
+    backToAuthorize: () -> Unit,
 ) {
 
     val viewModel: NewsFeedViewModel = viewModel()
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
 
     when (val currentState = screenState.value) {
-
         is NewsFeedScreenState.Posts -> VkNewsFeedScreen(
             posts = currentState.posts,
             viewModel = viewModel,
@@ -61,6 +61,10 @@ fun NewsFeedScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = DarkBlue)
             }
+        }
+
+        is NewsFeedScreenState.Error -> {
+            backToAuthorize()
         }
 
         is NewsFeedScreenState.Initial -> {}
@@ -167,8 +171,7 @@ private fun LazyColumnFeedPosts(
                 ) {
                     CircularProgressIndicator(color = DarkBlue)
                 }
-            }
-            else {
+            } else {
                 SideEffect {
                     viewModel.loadNextRecommendations()
                 }
