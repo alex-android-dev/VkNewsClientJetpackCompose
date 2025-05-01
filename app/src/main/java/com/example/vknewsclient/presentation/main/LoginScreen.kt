@@ -1,6 +1,5 @@
 package com.example.vknewsclient.presentation.main
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -23,8 +22,8 @@ import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
 fun LoginScreen(
-    context: Context,
     viewModel: MainViewModel,
+
 ) {
 
     Box(

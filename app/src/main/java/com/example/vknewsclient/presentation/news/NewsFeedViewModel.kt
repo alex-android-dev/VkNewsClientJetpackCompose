@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.Repository
 import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.NewsFeedResult
 import com.example.vknewsclient.extensions.mergeWith
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -16,7 +16,18 @@ import kotlinx.coroutines.launch
 class NewsFeedViewModel : ViewModel() {
     private val repository = Repository()
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
-    private val recommendationsFlow = repository.recommendationPosts
+
+    private val recommendationsFlow = repository.recommendationPosts.map {
+        when (it) {
+            is NewsFeedResult.Error -> {
+                NewsFeedScreenState.Error
+            }
+
+            is NewsFeedResult.Success -> {
+                NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
+            }
+        }
+    }
 
     /** Необходим, чтобы отлавливать ошибки при удалении и изменении лайка **/
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
@@ -26,21 +37,32 @@ class NewsFeedViewModel : ViewModel() {
     /** Добавлять сюда catch или retry не имеет смысла, поскольку горячий флоу живет всегда **/
     val screenState = repository
         .recommendationPosts
-        .filter { it.isNotEmpty() }
-        .map { NewsFeedScreenState.Posts(posts = it) as NewsFeedScreenState }
+        .map {
+            if (it is NewsFeedResult.Success) {
+                NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
+            } else {
+                NewsFeedScreenState.Error
+            }
+        }
         .onStart { emit(NewsFeedScreenState.Loading) }
         .mergeWith(loadNextDataFlow)
 
 
     fun loadNextRecommendations() {
         viewModelScope.launch {
-            loadNextDataFlow.emit(
-                NewsFeedScreenState.Posts(
-                    posts = recommendationsFlow.value,
-                    nextDataIsLoading = true
+            if (recommendationsFlow is NewsFeedResult.Success) {
+                loadNextDataFlow.emit(
+                    NewsFeedScreenState.Posts(
+                        posts = recommendationsFlow.posts,
+                        nextDataIsLoading = true
+                    )
                 )
-            )
-            repository.loadNextData()
+                repository.loadNextData()
+            } else {
+                loadNextDataFlow.emit(
+                    NewsFeedScreenState.Error
+                )
+            }
         }
     }
 

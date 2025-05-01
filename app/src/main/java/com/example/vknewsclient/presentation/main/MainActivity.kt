@@ -23,9 +23,14 @@ class MainActivity : ComponentActivity() {
                 val authState = viewModel.authState.observeAsState(AuthState.Initial)
 
                 when (authState.value) {
-                    is AuthState.Authorized -> VkNewsMainScreen()
-                    is AuthState.NonAuthorized -> LoginScreen(this, viewModel)
-                    else -> {}
+                    is AuthState.Authorized -> VkNewsMainScreen(
+                        backToAuthorize = {
+                            authState.value == AuthState.NonAuthorized
+                        }
+                    )
+
+                    is AuthState.NonAuthorized -> LoginScreen(viewModel)
+                    AuthState.Initial -> {}
                 }
             }
         }

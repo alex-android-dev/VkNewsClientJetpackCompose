@@ -14,7 +14,9 @@ import com.example.vknewsclient.presentation.news.NewsFeedScreen
 
 
 @Composable
-fun VkNewsMainScreen() {
+fun VkNewsMainScreen(
+    backToAuthorize: () -> Unit,
+) {
     val navigationState = rememberNavigationState()
 
     Scaffold(
@@ -33,7 +35,8 @@ fun VkNewsMainScreen() {
                     paddingValues,
                     onCommentClickListener = { feedPost ->
                         navigationState.navigateToComments(feedPost)
-                    }
+                    },
+                    backToAuthorize = backToAuthorize
                 )
             },
             commentsScreenContent = { feedPost ->
