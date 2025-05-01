@@ -22,8 +22,7 @@ import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
 fun LoginScreen(
-    viewModel: MainViewModel,
-
+    viewModel: MainViewModel
 ) {
 
     Box(
@@ -45,11 +44,9 @@ fun LoginScreen(
             OneTap(
                 onAuth = { oAuth, token ->
                     Log.d("LoginScreen", "token: ${token.token}")
-                    // TODO UI слой не должен знать об domain слое. Нужно подумать как переделать
-                    viewModel.performAuthResult(AuthState.Authorized)
+                    viewModel.performAuthResult(AuthState.Authorized(token.token))
                 },
                 onFail = { oAuth, fail ->
-                    // TODO UI слой не должен знать об domain слое. Нужно подумать как переделать
                     viewModel.performAuthResult(AuthState.NonAuthorized)
                     viewModel.setFail(fail)
                 },

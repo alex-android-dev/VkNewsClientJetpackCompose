@@ -18,9 +18,6 @@ import kotlinx.coroutines.launch
 
 class MainViewModel() : ViewModel() {
 
-//    private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
-//    val authState = _authState
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState = _authState.asStateFlow()
 
@@ -29,11 +26,10 @@ class MainViewModel() : ViewModel() {
         Log.d("MainViewModel", "token: ${VKID.Companion.instance.accessToken?.token}")
 
         if (token != null) {
-            _authState.value = AuthState.Authorized
+            _authState.value = AuthState.Authorized(token)
         } else {
             _authState.value = AuthState.NonAuthorized
         }
-
     }
 
     fun performAuthResult(state: AuthState) {
@@ -41,6 +37,7 @@ class MainViewModel() : ViewModel() {
     }
 
     fun setFail(fail: VKIDAuthFail) {
+        // TODO это ответственность репозитория
         when (fail) {
             is VKIDAuthFail.Canceled -> Log.d("LoginScreen", "Failed Canceled")
             is VKIDAuthFail.FailedApiCall -> Log.d("LoginScreen", "Failed ApiCall")
@@ -64,41 +61,50 @@ class MainViewModel() : ViewModel() {
 
     }
 
-    private suspend fun getUserData() {
-        VKID.instance.getUserData(
-            callback = object : VKIDGetUserCallback {
-                override fun onSuccess(user: VKIDUser) {
-                    Log.d("MainViewModel", "$user")
-                }
 
-                override fun onFail(fail: VKIDGetUserFail) {
-                    when (fail) {
-                        is VKIDGetUserFail.FailedApiCall -> fail.description // Использование текста ошибки.
-                        is VKIDGetUserFail.IdTokenTokenExpired -> fail.description // Использование текста ошибки.
-                        is VKIDGetUserFail.NotAuthenticated -> fail.description // Использование текста ошибки.
+    fun refreshToken() {
+        // TODO это ответственность репозитория
+        viewModelScope.launch {
+            VKID.instance.refreshToken(
+                callback = object : VKIDRefreshTokenCallback {
+                    override fun onSuccess(token: AccessToken) {
+                        Log.d("MainViewModel", "refresh token: $token")
+                        _authState.value = AuthState.Authorized(token.token)
+                    }
+
+                    override fun onFail(fail: VKIDRefreshTokenFail) {
+                        when (fail) {
+                            is VKIDRefreshTokenFail.FailedApiCall -> fail.description // Использование текста ошибки.
+                            is VKIDRefreshTokenFail.FailedOAuthState -> fail.description // Использование текста ошибки.
+                            is VKIDRefreshTokenFail.RefreshTokenExpired -> fail // Ошибка истечения срока жизни RT. Это уведомление о том, что пользователю нужно перелогиниться.
+                            is VKIDRefreshTokenFail.NotAuthenticated -> fail // Ошибка отсутствия авторизации у пользователя. Это уведомление о том, что пользователю нужно авторизоваться.
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
-    private suspend fun refreshToken() {
-        VKID.instance.refreshToken(
-            callback = object : VKIDRefreshTokenCallback {
-                override fun onSuccess(token: AccessToken) {
-                    Log.d("MainViewModel", "refresh token: $token")
-                }
 
-                override fun onFail(fail: VKIDRefreshTokenFail) {
-                    when (fail) {
-                        is VKIDRefreshTokenFail.FailedApiCall -> fail.description // Использование текста ошибки.
-                        is VKIDRefreshTokenFail.FailedOAuthState -> fail.description // Использование текста ошибки.
-                        is VKIDRefreshTokenFail.RefreshTokenExpired -> fail // Ошибка истечения срока жизни RT. Это уведомление о том, что пользователю нужно перелогиниться.
-                        is VKIDRefreshTokenFail.NotAuthenticated -> fail // Ошибка отсутствия авторизации у пользователя. Это уведомление о том, что пользователю нужно авторизоваться.
+    private fun getUserData() {
+        // TODO это ответственность репозитория
+        viewModelScope.launch {
+            VKID.instance.getUserData(
+                callback = object : VKIDGetUserCallback {
+                    override fun onSuccess(user: VKIDUser) {
+                        Log.d("MainViewModel", "$user")
+                    }
+
+                    override fun onFail(fail: VKIDGetUserFail) {
+                        when (fail) {
+                            is VKIDGetUserFail.FailedApiCall -> fail.description // Использование текста ошибки.
+                            is VKIDGetUserFail.IdTokenTokenExpired -> fail.description // Использование текста ошибки.
+                            is VKIDGetUserFail.NotAuthenticated -> fail.description // Использование текста ошибки.
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

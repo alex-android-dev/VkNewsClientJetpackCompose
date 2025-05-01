@@ -6,12 +6,12 @@ import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
-import com.example.vknewsclient.data.network.ApiFactory.apiService
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedResult
-import com.example.vknewsclient.domain.PostComment
-import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.domain.StatisticType
+import com.example.vknewsclient.domain.entity.FeedPost
+import com.example.vknewsclient.domain.entity.NewsFeedResult
+import com.example.vknewsclient.domain.entity.PostComment
+import com.example.vknewsclient.domain.entity.StatisticItem
+import com.example.vknewsclient.domain.entity.StatisticType
+import com.example.vknewsclient.domain.repository.Repository
 import com.example.vknewsclient.extensions.mergeWith
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
@@ -28,10 +28,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
-class Repository {
-
+class RepositoryImpl : Repository {
     private val apiService = ApiFactory.apiService
     private val mapper = Mapper()
+
     private val token = VKID.Companion.instance.accessToken?.token
         ?: throw IllegalStateException("token is null")
 
@@ -46,66 +46,37 @@ class Repository {
     private val refreshedListFlow = MutableSharedFlow<NewsFeedResult>()
 
     // Отвечает за загрузку новых данных
-    private val loadedListFlow = flow {
-        nextDataNeededEvents.emit(Unit)
-        /**
-         * Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
-         * Эмит прилетает -> стартует загрузка данных **/
-
-        nextDataNeededEvents.collect() {
-            val startFrom = nextFrom
-            // Делаем так, чтобы проверка if - else отрабатывала корректно
-
-            if (startFrom == null && feedPostList.isNotEmpty()) {
-                emit(feedPostList)
-                return@collect
-            }
-
-            val response: NewsFeedResponseDto =
-                if (startFrom == null) {
-                    apiService.loadRecommendations(token)
-                } else {
-                    apiService.loadRecommendations(token, startFrom)
-                }
-
-            nextFrom = response.newsFeedContent.nextFrom
-            val posts = mapper.mapNewsFeedResponseToPosts(response)
-            _feedPosts.addAll(posts)
-            emit(feedPostList)
-        }
-    }
+    private val loadedListFlow = getLoadedListFlow()
         /** Маппим к классу Result и передаем наружу **/
-        .map {
-            NewsFeedResult.Success(it) as NewsFeedResult
-        }
+        .map { NewsFeedResult.Success(it) as NewsFeedResult }
+        /** Данный блок позволяет повторять запрос с определенной задержкой (чтобы не ддосить сервер) **/
         .retry(RETRY_TRIES) {
-            /** Данный блок позволяет повторять запрос с определенной задержкой (чтобы не ддосить сервер) **/
             delay(RETRY_TIMEOUT_MILLIS)
             true
         }
-        .catch {
-            /** Происходит после retry **/
-            /** Холодный флоу больше не эмитит данные **/
-            emit(NewsFeedResult.Error)
-        }
+        /** Происходит после retry **/
+        /** Холодный флоу больше не эмитит данные **/
+        .catch { emit(NewsFeedResult.Error) }
 
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
 
     // Чтобы последний эмит был учтен. Иначе поток его не увидит при начальной подписке
-    val recommendationPosts: StateFlow<NewsFeedResult> =
-        loadedListFlow
-            .mergeWith(refreshedListFlow)
-            .stateIn(
-                scope = scope,
-                started = SharingStarted.Lazily,
-                initialValue = NewsFeedResult.Success(feedPostList)
-            )
+    private val recommendationPosts: StateFlow<NewsFeedResult> = loadedListFlow
+        .mergeWith(refreshedListFlow)
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = NewsFeedResult.Success(feedPostList)
+        )
 
+    private val commentsToPost = MutableStateFlow<List<PostComment>>(listOf())
 
-    val commentsToPost = MutableStateFlow<List<PostComment>>(listOf())
+    override fun getRecommendations(): StateFlow<NewsFeedResult> = recommendationPosts
+
+    override fun getCommentsToPost(): StateFlow<List<PostComment>> = commentsToPost
 
     // TODO тут достаточно использовать холодные флоу. Переделать
-    suspend fun loadCommentsToPost(feedPost: FeedPost) {
+    override suspend fun loadCommentsToPost(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
         // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
         val response: CommentsResponseDto = apiService.getCommentsToPost(
@@ -120,12 +91,12 @@ class Repository {
         commentsToPost.emit(comments)
     }
 
-    suspend fun loadNextData() {
+    override suspend fun loadNextData() {
         delay(2000)
         nextDataNeededEvents.emit(Unit)
     }
 
-    suspend fun removePost(feedPost: FeedPost) {
+    override suspend fun removePost(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
         // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
 
@@ -143,7 +114,7 @@ class Repository {
         refreshedListFlow.emit(NewsFeedResult.Success(feedPostList))
     }
 
-    suspend fun addLike(feedPost: FeedPost) {
+    override suspend fun addLike(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
         // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
 
@@ -162,7 +133,7 @@ class Repository {
 
     }
 
-    suspend fun deleteLike(feedPost: FeedPost) {
+    override suspend fun deleteLike(feedPost: FeedPost) {
         val ownerId = -feedPost.communityId
         // TODO временная затычка. нужно подумать как изменить, чтобы не втыкать её везде
 
@@ -175,6 +146,40 @@ class Repository {
         if (response != null)
             changeLikeInFeedPosts(response, feedPost)
 
+    }
+
+
+    /**
+     * Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
+     * Эмит прилетает -> стартует загрузка данных **/
+    /**
+     * Мы эмитим объект типа юнит, чтобы дать другому коллекту сигнал продолжить работу
+     * Эмит прилетает -> стартует загрузка данных
+     * **/
+    private fun getLoadedListFlow(): Flow<List<FeedPost>> = flow {
+        nextDataNeededEvents.emit(Unit)
+
+        nextDataNeededEvents.collect() {
+            val startFrom = nextFrom
+            /** Делаем так, чтобы проверка if - else отрабатывала корректно **/
+
+            if (startFrom == null && feedPostList.isNotEmpty()) {
+                emit(feedPostList)
+                return@collect
+            }
+
+            val response: NewsFeedResponseDto =
+                if (startFrom == null) {
+                    apiService.loadRecommendations(token)
+                } else {
+                    apiService.loadRecommendations(token, startFrom)
+                }
+
+            nextFrom = response.newsFeedContent.nextFrom
+            val posts = mapper.mapNewsFeedResponseToPosts(response)
+            _feedPosts.addAll(posts)
+            emit(feedPostList)
+        }
     }
 
     private suspend fun changeLikeInFeedPosts(
@@ -203,18 +208,5 @@ class Repository {
         private const val RETRY_TRIES: Long = 3L
     }
 
-//    suspend fun refreshToken() {
-//        Log.d("NewsFeedRepository", "refreshToken()")
-//        VKID.instance.refreshToken(
-//            callback = object : VKIDRefreshTokenCallback {
-//                override fun onSuccess(token: AccessToken) {
-//                }
-//
-//                override fun onFail(fail: VKIDRefreshTokenFail) {
-//                    Log.d("NewsFeedRepository", fail.description)
-//                }
-//            }
-//        )
-//    } // TODO Данный метод не работает. Нужно понять как корректно рефрешить токен
 }
 

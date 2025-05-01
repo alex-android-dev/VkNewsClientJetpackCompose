@@ -3,9 +3,14 @@ package com.example.vknewsclient.presentation.news
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vknewsclient.data.repository.Repository
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedResult
+import com.example.vknewsclient.data.repository.RepositoryImpl
+import com.example.vknewsclient.domain.entity.FeedPost
+import com.example.vknewsclient.domain.entity.NewsFeedResult
+import com.example.vknewsclient.domain.usecase.AddLikeUseCase
+import com.example.vknewsclient.domain.usecase.DeleteLikeUseCase
+import com.example.vknewsclient.domain.usecase.GetRecommendationsUseCase
+import com.example.vknewsclient.domain.usecase.LoadNextDataUseCase
+import com.example.vknewsclient.domain.usecase.RemovePostUseCase
 import com.example.vknewsclient.extensions.mergeWith
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,16 +19,24 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel : ViewModel() {
-    private val repository = Repository()
+    private val repositoryImpl = RepositoryImpl()
+    private val getRecommendationsUseCase = GetRecommendationsUseCase(repositoryImpl)
+    private val loadNextDataUseCase = LoadNextDataUseCase(repositoryImpl)
+    private val deleteLikeUseCase = DeleteLikeUseCase(repositoryImpl)
+    private val addLikeUseCase = AddLikeUseCase(repositoryImpl)
+    private val removePostUseCase = RemovePostUseCase(repositoryImpl)
+
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
 
-    private val recommendationsFlow = repository.recommendationPosts.map {
+    private val recommendationsFlow = getRecommendationsUseCase.invoke().map {
         when (it) {
             is NewsFeedResult.Error -> {
-                NewsFeedScreenState.Error
+                Log.d("NewsFeedViewModel", "NewsFeedResult.Error")
+                NewsFeedScreenState.Error as NewsFeedScreenState
             }
 
             is NewsFeedResult.Success -> {
+                Log.d("NewsFeedViewModel", "NewsFeedResult.Success")
                 NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
             }
         }
@@ -35,12 +48,12 @@ class NewsFeedViewModel : ViewModel() {
     }
 
     /** Добавлять сюда catch или retry не имеет смысла, поскольку горячий флоу живет всегда **/
-    val screenState = repository
-        .recommendationPosts
+    val screenState = getRecommendationsUseCase.invoke()
         .map {
             if (it is NewsFeedResult.Success) {
                 NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
             } else {
+                Log.d("NewsFeedViewModel", "Screen State is Error")
                 NewsFeedScreenState.Error
             }
         }
@@ -57,7 +70,7 @@ class NewsFeedViewModel : ViewModel() {
                         nextDataIsLoading = true
                     )
                 )
-                repository.loadNextData()
+                loadNextDataUseCase.invoke()
             } else {
                 loadNextDataFlow.emit(
                     NewsFeedScreenState.Error
@@ -70,9 +83,9 @@ class NewsFeedViewModel : ViewModel() {
         if (feedPost == null) return
         viewModelScope.launch(exceptionHandler) {
             if (feedPost.isLiked) {
-                repository.deleteLike(feedPost)
+                deleteLikeUseCase.invoke(feedPost)
             } else {
-                repository.addLike(feedPost)
+                addLikeUseCase.invoke(feedPost)
             }
         }
         // TODO при многократном нажатии приложение падает
@@ -82,7 +95,7 @@ class NewsFeedViewModel : ViewModel() {
     // TODO BUG. Пост не исчезает после удаления. Остается место. Список не обновляется.
     fun removePost(feedPost: FeedPost) {
         viewModelScope.launch(exceptionHandler) {
-            repository.removePost(feedPost)
+            removePostUseCase.invoke(feedPost)
         }
 
     }

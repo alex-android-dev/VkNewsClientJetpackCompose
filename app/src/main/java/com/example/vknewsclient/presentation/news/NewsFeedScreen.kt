@@ -1,7 +1,7 @@
 package com.example.vknewsclient.presentation.news
 
 import android.annotation.SuppressLint
-import android.provider.SimPhonebookContract
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +24,6 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -32,7 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.presentation.main.VK_TITLE_SCAFFOLD_STR
-import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
 
@@ -42,9 +41,9 @@ fun NewsFeedScreen(
     onCommentClickListener: (FeedPost) -> Unit,
     backToAuthorize: () -> Unit,
 ) {
-
     val viewModel: NewsFeedViewModel = viewModel()
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
+    Log.d("NewsFeedScreen", "state: ${screenState.value}")
 
     when (val currentState = screenState.value) {
         is NewsFeedScreenState.Posts -> VkNewsFeedScreen(

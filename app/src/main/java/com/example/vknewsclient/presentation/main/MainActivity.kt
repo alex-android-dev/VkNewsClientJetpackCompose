@@ -21,12 +21,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             VkNewsClientTheme() {
                 val viewModel: MainViewModel = viewModel()
-                val authState = viewModel.authState.collectAsState(AuthState.Initial)
+                var authState = viewModel.authState.collectAsState(AuthState.Initial)
+                Log.d("MainActivity", "state ${authState.value}")
 
                 when (authState.value) {
                     is AuthState.Authorized -> VkNewsMainScreen(
                         backToAuthorize = {
-                            authState.value == AuthState.NonAuthorized
+                            viewModel.refreshToken()
                         }
                     )
 
