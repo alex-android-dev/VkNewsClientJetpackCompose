@@ -1,4 +1,4 @@
-package com.example.vknewsclient.domain
+package com.example.vknewsclient.domain.entity
 
 /** Класс используется для примера
  * Если у нас не прогружаются данные и прилетает ошибка при загрузке данных **/

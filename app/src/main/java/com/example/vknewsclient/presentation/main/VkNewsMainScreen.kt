@@ -36,7 +36,7 @@ fun VkNewsMainScreen(
                     onCommentClickListener = { feedPost ->
                         navigationState.navigateToComments(feedPost)
                     },
-                    backToAuthorize = backToAuthorize
+                    backToAuthorize = { backToAuthorize() }
                 )
             },
             commentsScreenContent = { feedPost ->

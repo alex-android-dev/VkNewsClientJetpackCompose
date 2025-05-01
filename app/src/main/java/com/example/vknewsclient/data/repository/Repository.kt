@@ -6,18 +6,19 @@ import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
-import com.example.vknewsclient.data.network.ApiFactory.apiService
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedResult
-import com.example.vknewsclient.domain.PostComment
-import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.domain.StatisticType
+import com.example.vknewsclient.domain.entity.FeedPost
+import com.example.vknewsclient.domain.entity.NewsFeedResult
+import com.example.vknewsclient.domain.entity.PostComment
+import com.example.vknewsclient.domain.entity.StatisticItem
+import com.example.vknewsclient.domain.entity.StatisticType
 import com.example.vknewsclient.extensions.mergeWith
+import com.vk.id.AccessToken
 import com.vk.id.VKID
+import com.vk.id.refresh.VKIDRefreshTokenCallback
+import com.vk.id.refresh.VKIDRefreshTokenFail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +34,7 @@ class Repository {
     private val apiService = ApiFactory.apiService
     private val mapper = Mapper()
     private val token = VKID.Companion.instance.accessToken?.token
-        ?: throw IllegalStateException("token is null")
+    ?: throw IllegalStateException("token is null")
 
     private val _feedPosts = mutableListOf<FeedPost>()
     private val feedPostList
@@ -86,6 +87,7 @@ class Repository {
         .catch {
             /** Происходит после retry **/
             /** Холодный флоу больше не эмитит данные **/
+            Log.d("Repository", "NewsFeedResult is Error")
             emit(NewsFeedResult.Error)
         }
 
@@ -203,18 +205,5 @@ class Repository {
         private const val RETRY_TRIES: Long = 3L
     }
 
-//    suspend fun refreshToken() {
-//        Log.d("NewsFeedRepository", "refreshToken()")
-//        VKID.instance.refreshToken(
-//            callback = object : VKIDRefreshTokenCallback {
-//                override fun onSuccess(token: AccessToken) {
-//                }
-//
-//                override fun onFail(fail: VKIDRefreshTokenFail) {
-//                    Log.d("NewsFeedRepository", fail.description)
-//                }
-//            }
-//        )
-//    } // TODO Данный метод не работает. Нужно понять как корректно рефрешить токен
 }
 

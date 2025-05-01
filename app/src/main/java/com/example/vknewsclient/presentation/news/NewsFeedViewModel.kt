@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.Repository
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.NewsFeedResult
+import com.example.vknewsclient.domain.entity.FeedPost
+import com.example.vknewsclient.domain.entity.NewsFeedResult
 import com.example.vknewsclient.extensions.mergeWith
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,15 +15,18 @@ import kotlinx.coroutines.launch
 
 class NewsFeedViewModel : ViewModel() {
     private val repository = Repository()
+
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
 
     private val recommendationsFlow = repository.recommendationPosts.map {
         when (it) {
             is NewsFeedResult.Error -> {
-                NewsFeedScreenState.Error
+                Log.d("NewsFeedViewModel", "NewsFeedResult.Error")
+                NewsFeedScreenState.Error as NewsFeedScreenState
             }
 
             is NewsFeedResult.Success -> {
+                Log.d("NewsFeedViewModel", "NewsFeedResult.Success")
                 NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
             }
         }
@@ -41,6 +44,7 @@ class NewsFeedViewModel : ViewModel() {
             if (it is NewsFeedResult.Success) {
                 NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
             } else {
+                Log.d("NewsFeedViewModel", "Screen State is Error")
                 NewsFeedScreenState.Error
             }
         }

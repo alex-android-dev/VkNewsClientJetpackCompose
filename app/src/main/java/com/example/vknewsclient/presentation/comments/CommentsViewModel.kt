@@ -1,20 +1,13 @@
 package com.example.vknewsclient.presentation.comments
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.Repository
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.PostComment
-import kotlinx.coroutines.delay
+import com.example.vknewsclient.domain.entity.FeedPost
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class CommentsViewModel(
