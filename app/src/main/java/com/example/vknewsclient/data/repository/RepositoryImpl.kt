@@ -6,6 +6,7 @@ import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
+import com.example.vknewsclient.data.network.ApiService
 import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.domain.entity.NewsFeedResult
 import com.example.vknewsclient.domain.entity.PostComment
@@ -14,6 +15,7 @@ import com.example.vknewsclient.domain.entity.StatisticType
 import com.example.vknewsclient.domain.repository.Repository
 import com.example.vknewsclient.extensions.mergeWith
 import com.vk.id.VKID
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,9 +30,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
-class RepositoryImpl : Repository {
-    private val apiService = ApiFactory.apiService
-    private val mapper = Mapper()
+class RepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+    private val mapper: Mapper,
+) : Repository {
     private var token = updateToken()
 
     private val _feedPosts = mutableListOf<FeedPost>()

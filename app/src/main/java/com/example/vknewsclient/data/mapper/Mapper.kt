@@ -13,7 +13,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class Mapper {
+class Mapper @Inject constructor() {
 
     fun mapNewsFeedResponseToPosts(responseDto: NewsFeedResponseDto): List<FeedPost> {
         val result = mutableListOf<FeedPost>()
