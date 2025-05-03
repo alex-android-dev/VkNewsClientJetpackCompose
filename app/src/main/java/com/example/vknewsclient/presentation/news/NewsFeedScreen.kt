@@ -172,6 +172,7 @@ private fun LazyColumnFeedPosts(
                 }
             } else {
                 SideEffect {
+                    // TODO тут баг. Не работает загрузка старых постов
                     viewModel.loadNextRecommendations()
                 }
             }

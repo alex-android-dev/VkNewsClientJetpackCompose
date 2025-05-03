@@ -64,6 +64,7 @@ class NewsFeedViewModel : ViewModel() {
     fun loadNextRecommendations() {
         viewModelScope.launch {
             if (recommendationsFlow is NewsFeedResult.Success) {
+                Log.d("NewsFeedViewModel", "loadNextRecommendations")
                 loadNextDataFlow.emit(
                     NewsFeedScreenState.Posts(
                         posts = recommendationsFlow.posts,
@@ -71,10 +72,6 @@ class NewsFeedViewModel : ViewModel() {
                     )
                 )
                 loadNextDataUseCase.invoke()
-            } else {
-                loadNextDataFlow.emit(
-                    NewsFeedScreenState.Error
-                )
             }
         }
     }
@@ -97,6 +94,5 @@ class NewsFeedViewModel : ViewModel() {
         viewModelScope.launch(exceptionHandler) {
             removePostUseCase.invoke(feedPost)
         }
-
     }
 }

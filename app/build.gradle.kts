@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.ksp)
     id("vkid.manifest.placeholders")
 }
 
@@ -44,6 +45,9 @@ android {
 }
 
 dependencies {
+    ksp(libs.dagger.compiler)
+
+    implementation(libs.dagger)
     implementation(libs.logging.interceptor)
     implementation(libs.retrofit)
     implementation(platform(libs.okhttp.bom))
@@ -71,5 +75,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
