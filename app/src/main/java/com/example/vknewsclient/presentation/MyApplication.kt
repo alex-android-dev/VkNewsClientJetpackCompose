@@ -7,7 +7,7 @@ import com.example.vknewsclient.di.DaggerApplicationComponent
 class MyApplication : Application() {
 
     val component by lazy {
-        DaggerApplicationComponent.create()
+        DaggerApplicationComponent.factory().create(this)
     }
 
 }
