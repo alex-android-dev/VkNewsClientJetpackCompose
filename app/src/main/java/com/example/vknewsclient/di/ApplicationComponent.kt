@@ -1,9 +1,7 @@
 package com.example.vknewsclient.di
 
 import android.app.Application
-import android.content.Context
 import com.example.vknewsclient.presentation.main.MainActivity
-import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 
@@ -12,6 +10,12 @@ import dagger.Component
 interface ApplicationComponent {
 
     fun inject(mainActivity: MainActivity)
+
+    /**
+     * При создании проекта Dagger Application Component сможет создать сабкомпонент
+     * У Сабкомпонента мы вызовем метод create и закинем в него feedPost
+     */
+    fun getCommentsScreenComponentFactory(): CommentsScreenSubComponent.Factory
 
     @Component.Factory
     interface Factory {

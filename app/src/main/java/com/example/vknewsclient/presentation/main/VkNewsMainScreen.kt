@@ -44,7 +44,6 @@ fun VkNewsMainScreen(
             },
             commentsScreenContent = { feedPost ->
                 VkCommentsScreen(
-                    viewModelFactory,
                     paddingValues,
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()

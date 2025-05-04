@@ -23,20 +23,6 @@ interface DataModule {
 
         @ApplicationScope
         @Provides
-        fun provideFeedPost() = FeedPost(
-            id = 0,
-            communityId = 0,
-            communityName = "",
-            publicationDate = "",
-            communityImageUrl = "",
-            contentText = "",
-            contentImageUrl = "",
-            statistics = listOf(),
-            isLiked = false
-        )
-
-        @ApplicationScope
-        @Provides
         fun provideVkStorage(): Nothing {
             TODO(
                 "Метод отвечает за выдачу токена. Сейчас токен выдается внутри data слоя." +
