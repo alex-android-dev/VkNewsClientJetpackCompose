@@ -6,6 +6,7 @@ import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.LikesCountResponse
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.data.network.ApiFactory
+import com.example.vknewsclient.data.network.ApiService
 import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.domain.entity.NewsFeedResult
 import com.example.vknewsclient.domain.entity.PostComment
@@ -14,6 +15,7 @@ import com.example.vknewsclient.domain.entity.StatisticType
 import com.example.vknewsclient.domain.repository.Repository
 import com.example.vknewsclient.extensions.mergeWith
 import com.vk.id.VKID
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,12 +30,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
-class RepositoryImpl : Repository {
-    private val apiService = ApiFactory.apiService
-    private val mapper = Mapper()
-
-    private val token = VKID.Companion.instance.accessToken?.token
-        ?: throw IllegalStateException("token is null")
+class RepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+    private val mapper: Mapper,
+) : Repository {
+    private var token = updateToken()
 
     private val _feedPosts = mutableListOf<FeedPost>()
     private val feedPostList
@@ -56,7 +57,12 @@ class RepositoryImpl : Repository {
         }
         /** Происходит после retry **/
         /** Холодный флоу больше не эмитит данные **/
-        .catch { emit(NewsFeedResult.Error) }
+        .catch {
+            emit(NewsFeedResult.Error)
+            delay(RETRY_TIMEOUT_MILLIS)
+            token = updateToken()
+            nextDataNeededEvents.emit(Unit)
+        }
 
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
 
@@ -175,6 +181,8 @@ class RepositoryImpl : Repository {
                     apiService.loadRecommendations(token, startFrom)
                 }
 
+            Log.d("RepositoryImpl", "$response")
+
             nextFrom = response.newsFeedContent.nextFrom
             val posts = mapper.mapNewsFeedResponseToPosts(response)
             _feedPosts.addAll(posts)
@@ -202,6 +210,11 @@ class RepositoryImpl : Repository {
         if (postIndex != -1) _feedPosts[postIndex] = newPost
         refreshedListFlow.emit(NewsFeedResult.Success(feedPostList))
     }
+
+    private fun updateToken() =
+        VKID.Companion.instance.accessToken?.token
+            ?: throw IllegalStateException("token is null")
+
 
     companion object {
         private const val RETRY_TIMEOUT_MILLIS: Long = 3000L

@@ -12,20 +12,20 @@ import com.example.vknewsclient.domain.usecase.GetRecommendationsUseCase
 import com.example.vknewsclient.domain.usecase.LoadNextDataUseCase
 import com.example.vknewsclient.domain.usecase.RemovePostUseCase
 import com.example.vknewsclient.extensions.mergeWith
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-class NewsFeedViewModel : ViewModel() {
-    private val repositoryImpl = RepositoryImpl()
-    private val getRecommendationsUseCase = GetRecommendationsUseCase(repositoryImpl)
-    private val loadNextDataUseCase = LoadNextDataUseCase(repositoryImpl)
-    private val deleteLikeUseCase = DeleteLikeUseCase(repositoryImpl)
-    private val addLikeUseCase = AddLikeUseCase(repositoryImpl)
-    private val removePostUseCase = RemovePostUseCase(repositoryImpl)
-
+class NewsFeedViewModel @Inject constructor(
+    private val getRecommendationsUseCase: GetRecommendationsUseCase,
+    private val loadNextDataUseCase: LoadNextDataUseCase,
+    private val deleteLikeUseCase: DeleteLikeUseCase,
+    private val addLikeUseCase: AddLikeUseCase,
+    private val removePostUseCase: RemovePostUseCase,
+) : ViewModel() {
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
 
     private val recommendationsFlow = getRecommendationsUseCase.invoke().map {
@@ -64,6 +64,7 @@ class NewsFeedViewModel : ViewModel() {
     fun loadNextRecommendations() {
         viewModelScope.launch {
             if (recommendationsFlow is NewsFeedResult.Success) {
+                Log.d("NewsFeedViewModel", "loadNextRecommendations")
                 loadNextDataFlow.emit(
                     NewsFeedScreenState.Posts(
                         posts = recommendationsFlow.posts,
@@ -71,10 +72,6 @@ class NewsFeedViewModel : ViewModel() {
                     )
                 )
                 loadNextDataUseCase.invoke()
-            } else {
-                loadNextDataFlow.emit(
-                    NewsFeedScreenState.Error
-                )
             }
         }
     }
@@ -97,6 +94,5 @@ class NewsFeedViewModel : ViewModel() {
         viewModelScope.launch(exceptionHandler) {
             removePostUseCase.invoke(feedPost)
         }
-
     }
 }

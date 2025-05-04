@@ -9,12 +9,14 @@ import androidx.compose.ui.Modifier
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.VkBottomNavigationBar
 import com.example.vknewsclient.navigation.rememberNavigationState
+import com.example.vknewsclient.presentation.ViewModelFactory
 import com.example.vknewsclient.presentation.comments.VkCommentsScreen
 import com.example.vknewsclient.presentation.news.NewsFeedScreen
 
 
 @Composable
 fun VkNewsMainScreen(
+    viewModelFactory: ViewModelFactory,
     backToAuthorize: () -> Unit,
 ) {
     val navigationState = rememberNavigationState()
@@ -32,6 +34,7 @@ fun VkNewsMainScreen(
             navHostController = navigationState.navHostController,
             newsFeedScreenContent = {
                 NewsFeedScreen(
+                    viewModelFactory,
                     paddingValues,
                     onCommentClickListener = { feedPost ->
                         navigationState.navigateToComments(feedPost)

@@ -12,11 +12,12 @@ import com.vk.id.refresh.VKIDRefreshTokenCallback
 import com.vk.id.refresh.VKIDRefreshTokenFail
 import com.vk.id.refreshuser.VKIDGetUserCallback
 import com.vk.id.refreshuser.VKIDGetUserFail
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel() : ViewModel() {
+class MainViewModel @Inject constructor() : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState = _authState.asStateFlow()

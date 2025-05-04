@@ -1,5 +1,6 @@
 package com.example.vknewsclient.data.mapper
 
+
 import com.example.vknewsclient.data.model.CommentsDto.CommentsResponseDto
 import com.example.vknewsclient.data.model.NewsFeedModelDto.NewsFeedResponseDto
 import com.example.vknewsclient.domain.entity.FeedPost
@@ -9,9 +10,10 @@ import com.example.vknewsclient.domain.entity.StatisticType
 import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class Mapper {
+class Mapper @Inject constructor() {
 
     fun mapNewsFeedResponseToPosts(responseDto: NewsFeedResponseDto): List<FeedPost> {
         val result = mutableListOf<FeedPost>()
