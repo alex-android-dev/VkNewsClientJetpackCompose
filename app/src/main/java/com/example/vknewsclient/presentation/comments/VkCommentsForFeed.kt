@@ -45,9 +45,7 @@ fun VkCommentsScreen(
     onBackPressed: () -> Unit,
     feedPost: FeedPost,
 ) {
-    val viewModel: CommentsViewModel = viewModel(
-        factory = CommentsViewModelFactory(feedPost),
-    )
+    val viewModel: CommentsViewModel = viewModel()
 
     val screenState = viewModel.state.collectAsState()
 
