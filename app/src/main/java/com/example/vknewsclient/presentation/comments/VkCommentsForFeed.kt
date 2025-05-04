@@ -39,6 +39,7 @@ import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.domain.entity.PostComment
 import com.example.vknewsclient.presentation.MyApplication
 import com.example.vknewsclient.presentation.ViewModelFactory
+import com.example.vknewsclient.presentation.getApplicationComponent
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
 
@@ -55,10 +56,7 @@ fun VkCommentsScreen(
      * ViewModel будет добавлена в мапу с соотв. ключом
      * Затем мы получаем ViewModelFactory в которой будет лежать необходимая реализация ViewModel (с фидпостом)
      */
-    val appComponent =
-        (LocalContext.current.applicationContext as MyApplication)
-            .component
-            .getCommentsScreenComponentFactory().create(feedPost)
+    val appComponent = getApplicationComponent().getCommentsScreenComponentFactory().create(feedPost)
 
     val viewModel: CommentsViewModel = viewModel(
         factory = appComponent.getViewModelFactory()

@@ -33,18 +33,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.presentation.main.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.presentation.ViewModelFactory
+import com.example.vknewsclient.presentation.getApplicationComponent
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
 
 @Composable
 fun NewsFeedScreen(
-    viewModelFactory: ViewModelFactory,
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit,
     backToAuthorize: () -> Unit,
 ) {
+
+    val component = getApplicationComponent()
+
     val viewModel: NewsFeedViewModel = viewModel(
-        factory = viewModelFactory
+        factory = component.getViewModelFactory()
     )
 
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
