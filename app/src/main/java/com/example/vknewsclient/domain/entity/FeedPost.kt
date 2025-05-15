@@ -2,10 +2,15 @@ package com.example.vknewsclient.domain.entity
 
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import androidx.navigation.NavType
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Если объект не изменится после его создания, то мы можем пометить его аннотацией Immutable
+ */
+@Immutable
 @Parcelize
 data class FeedPost(
     val id: Long,

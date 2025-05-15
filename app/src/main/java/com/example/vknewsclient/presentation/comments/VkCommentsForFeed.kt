@@ -24,12 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,8 +37,6 @@ import coil3.compose.AsyncImage
 import com.example.vknewsclient.R
 import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.domain.entity.PostComment
-import com.example.vknewsclient.presentation.MyApplication
-import com.example.vknewsclient.presentation.ViewModelFactory
 import com.example.vknewsclient.presentation.getApplicationComponent
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
@@ -49,14 +47,15 @@ fun VkCommentsScreen(
     onBackPressed: () -> Unit,
     feedPost: FeedPost,
 ) {
-
     /**
      * Будет создана реализации CommentsScreen Component
      * Компонент будет содержать необходимую зависимость для CommentsViewModel
      * ViewModel будет добавлена в мапу с соотв. ключом
      * Затем мы получаем ViewModelFactory в которой будет лежать необходимая реализация ViewModel (с фидпостом)
      */
-    val appComponent = getApplicationComponent().getCommentsScreenComponentFactory().create(feedPost)
+    val appComponent =
+        getApplicationComponent().getCommentsScreenComponentFactory().create(feedPost)
+    Log.d("RECOMPOSITION_TAG", "VkCommentsScreen getApplicationComponent")
 
     val viewModel: CommentsViewModel = viewModel(
         factory = appComponent.getViewModelFactory()
@@ -64,6 +63,20 @@ fun VkCommentsScreen(
 
     val screenState = viewModel.state.collectAsState()
 
+
+    CommentsScreenContent(
+        screenState = screenState,
+        paddingValues = paddingValues,
+        onBackPressed = onBackPressed,
+    )
+}
+
+@Composable
+private fun CommentsScreenContent(
+    screenState: State<CommentsScreenState>,
+    paddingValues: PaddingValues,
+    onBackPressed: () -> Unit,
+) {
     Scaffold(
         modifier = Modifier
             .padding(paddingValues)
@@ -77,8 +90,9 @@ fun VkCommentsScreen(
             )
         },
     ) { paddingValues ->
+        val currentState = screenState.value
 
-        when (val currentState = screenState.value) {
+        when (currentState) {
             is CommentsScreenState.Comments -> LazyColumnCommentsForFeedPost(
                 paddingValues,
                 currentState.comments

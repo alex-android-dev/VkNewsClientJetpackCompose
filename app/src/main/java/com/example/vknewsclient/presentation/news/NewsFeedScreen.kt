@@ -23,6 +23,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +31,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vknewsclient.presentation.main.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.domain.entity.FeedPost
-import com.example.vknewsclient.presentation.ViewModelFactory
 import com.example.vknewsclient.presentation.getApplicationComponent
+import com.example.vknewsclient.presentation.main.VK_TITLE_SCAFFOLD_STR
 import com.example.vknewsclient.presentation.main.VkTopAppBar
 import com.example.vknewsclient.ui.theme.DarkBlue
 
@@ -45,6 +45,8 @@ fun NewsFeedScreen(
 ) {
 
     val component = getApplicationComponent()
+    Log.d("RECOMPOSITION_TAG", "NewsFeedScreen getApplicationComponent")
+
 
     val viewModel: NewsFeedViewModel = viewModel(
         factory = component.getViewModelFactory()
@@ -53,6 +55,28 @@ fun NewsFeedScreen(
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
     Log.d("NewsFeedScreen", "state: ${screenState.value}")
 
+    NewsFeedScreenContent(
+        screenState = screenState,
+        viewModel = viewModel,
+        paddingValues = paddingValues,
+        onCommentClickListener = onCommentClickListener,
+        backToAuthorize = backToAuthorize,
+    )
+
+}
+
+/**
+ * Делаем отдельную компоузбл функцию, чтобы у нас не пересоздавались объекты в основной функции
+ * Передаём именно стейт, чтобы функция реагировала на изменения screenState и происходила рекомпозиция при изменениях
+ */
+@Composable
+private fun NewsFeedScreenContent(
+    screenState: State<NewsFeedScreenState>,
+    viewModel: NewsFeedViewModel,
+    paddingValues: PaddingValues,
+    onCommentClickListener: (FeedPost) -> Unit,
+    backToAuthorize: () -> Unit,
+) {
     when (val currentState = screenState.value) {
         is NewsFeedScreenState.Posts -> VkNewsFeedScreen(
             posts = currentState.posts,
