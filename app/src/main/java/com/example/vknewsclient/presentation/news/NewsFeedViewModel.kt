@@ -3,6 +3,7 @@ package com.example.vknewsclient.presentation.news
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.data.repository.RepositoryImpl
 import com.example.vknewsclient.domain.entity.FeedPost
 import com.example.vknewsclient.domain.entity.NewsFeedResult
@@ -14,9 +15,13 @@ import com.example.vknewsclient.domain.usecase.RemovePostUseCase
 import com.example.vknewsclient.extensions.mergeWith
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel @Inject constructor(
@@ -32,15 +37,19 @@ class NewsFeedViewModel @Inject constructor(
         when (it) {
             is NewsFeedResult.Error -> {
                 Log.d("NewsFeedViewModel", "NewsFeedResult.Error")
-                NewsFeedScreenState.Error as NewsFeedScreenState
+                NewsFeedScreenState.Error
             }
 
             is NewsFeedResult.Success -> {
                 Log.d("NewsFeedViewModel", "NewsFeedResult.Success")
-                NewsFeedScreenState.Posts(posts = it.posts) as NewsFeedScreenState
+                NewsFeedScreenState.Posts(posts = it.posts)
             }
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = NewsFeedScreenState.Initial
+    )
 
     /** Необходим, чтобы отлавливать ошибки при удалении и изменении лайка **/
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
@@ -63,16 +72,21 @@ class NewsFeedViewModel @Inject constructor(
 
     fun loadNextRecommendations() {
         viewModelScope.launch {
-            if (recommendationsFlow is NewsFeedResult.Success) {
+
+            val currentValue = recommendationsFlow.value
+
+            if (currentValue is NewsFeedScreenState.Posts) {
                 Log.d("NewsFeedViewModel", "loadNextRecommendations")
+
                 loadNextDataFlow.emit(
                     NewsFeedScreenState.Posts(
-                        posts = recommendationsFlow.posts,
+                        posts = currentValue.posts,
                         nextDataIsLoading = true
                     )
                 )
                 loadNextDataUseCase.invoke()
             }
+
         }
     }
 

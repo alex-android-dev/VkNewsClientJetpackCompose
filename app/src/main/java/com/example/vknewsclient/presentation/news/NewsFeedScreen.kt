@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -41,10 +42,11 @@ import com.example.vknewsclient.ui.theme.DarkBlue
 fun NewsFeedScreen(
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit,
-    backToAuthorize: () -> Unit,
+    backToAuthorize: @Composable () -> Unit,
 ) {
 
     val component = getApplicationComponent()
+
     Log.d("RECOMPOSITION_TAG", "NewsFeedScreen getApplicationComponent")
 
 
@@ -56,11 +58,11 @@ fun NewsFeedScreen(
     Log.d("NewsFeedScreen", "state: ${screenState.value}")
 
     NewsFeedScreenContent(
-        screenState = screenState,
+        screenState = screenState.value,
         viewModel = viewModel,
         paddingValues = paddingValues,
         onCommentClickListener = onCommentClickListener,
-        backToAuthorize = backToAuthorize,
+        backToAuthorize = { backToAuthorize() },
     )
 
 }
@@ -71,21 +73,22 @@ fun NewsFeedScreen(
  */
 @Composable
 private fun NewsFeedScreenContent(
-    screenState: State<NewsFeedScreenState>,
+    screenState: NewsFeedScreenState,
     viewModel: NewsFeedViewModel,
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit,
-    backToAuthorize: () -> Unit,
+    backToAuthorize: @Composable () -> Unit,
 ) {
-    when (val currentState = screenState.value) {
+    when (screenState) {
+
         is NewsFeedScreenState.Posts -> VkNewsFeedScreen(
-            posts = currentState.posts,
+            posts = screenState.posts,
             viewModel = viewModel,
             paddingValues = paddingValues,
             onCommentClickListener = { feedPost ->
                 onCommentClickListener(feedPost)
             },
-            nextDataIsLoading = currentState.nextDataIsLoading
+            nextDataIsLoading = screenState.nextDataIsLoading
         )
 
         is NewsFeedScreenState.Loading -> {
@@ -192,7 +195,8 @@ private fun LazyColumnFeedPosts(
         }
 
         item {
-            if (nextDataIsLoading == true) {
+            Log.d("NewsFeedScreen", "nextDataIsLoading: $nextDataIsLoading")
+            if (nextDataIsLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -16,7 +16,7 @@ import com.example.vknewsclient.presentation.news.NewsFeedScreen
 
 @Composable
 fun VkNewsMainScreen(
-    backToAuthorize: () -> Unit,
+    backToAuthorize: @Composable () -> Unit,
 ) {
     val navigationState = rememberNavigationState()
 

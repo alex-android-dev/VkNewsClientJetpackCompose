@@ -55,7 +55,8 @@ class MainActivity : ComponentActivity() {
             when (authState.value) {
                 is AuthState.Authorized -> VkNewsMainScreen(
                     backToAuthorize = {
-                        viewModel.refreshToken()
+//                        viewModel.refreshToken()
+                        LoginScreen(viewModel)
                     }
                 )
 
